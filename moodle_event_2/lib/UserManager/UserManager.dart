@@ -5,15 +5,17 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 final String userFileName = "user"; // ファイル名
-final String fileVersion = "1"; //ファイルバージョン
+final String fileVersion = "0"; //ファイルバージョン
 
 ///
 /// ユーザデータを管理するクラス
 ///
 class UserManager {
-  String userId = "";
-  String password = "";
-  String authKey = "";
+  String userId = ""; //ユーザID
+  String password = ""; //パスワード
+  String authKey = ""; //二段階認証秘密鍵
+  String seesKey = ""; //セッションキー
+  bool isLogin = false; //ログイン済みか
 
   UserManager() {
     this._readUserFile();
