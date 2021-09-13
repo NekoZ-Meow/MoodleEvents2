@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import "package:http/http.dart" as http;
+import 'package:moodle_event_2/Constants/Constants.dart';
+import 'package:moodle_event_2/Utility/DebugUtility.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
 final String baseUrl = "https://cclms.kyoto-su.ac.jp/lib/ajax/service.php";
@@ -11,43 +13,57 @@ String getCookies(List<Cookie> cookies) {
   return cookies.map((cookie) => '${cookie.name}=${cookie.value}').join('; ');
 }
 
+///
+/// moodleにajax通信を行う
+///
 Future<String> _request(String method, Map args, String sessKey) async {
-  String url = baseUrl + "?sesskey=" + sessKey + "&info=" + method;
-  final cookieManager = WebviewCookieManager();
-  final cookies =
-      await cookieManager.getCookies("https://cclms.kyoto-su.ac.jp/");
-  //final cookies2 = await cookieManager.getCookies("https://www.kyoto-su.ac.jp/");
-  String cookie = getCookies(cookies);
-  //String cookie2 = getCookies(cookies2);
-  //cookie += "; " + cookie2;
-  print(cookie);
-  print(url);
+  WebviewCookieManager cookieManager = WebviewCookieManager();
+  String cookie =
+      getCookies(await cookieManager.getCookies(Constants.MOODLE_URL));
+
+  //String url = baseUrl + "?sesskey=" + sessKey + "&info=" + method;
+  String url = "${baseUrl}?sesskey=${sessKey}&info=${method}";
+
   Map<String, String> headers = {
     'content-type': 'application/json',
-    HttpHeaders.cookieHeader: cookie
+    HttpHeaders.cookieHeader: cookie,
   };
   String body = json.encode([
-    {"index": 0, "methodname": method, "args": args}
+    {
+      "index": 0,
+      "methodname": method,
+      "args": args,
+    }
   ]);
-  print(body);
+
+  // print(cookie);
+  // print(url);
+  // print(body);
+
   http.Response resp =
       await http.post(Uri.parse(url), headers: headers, body: body);
+
   if (resp.statusCode >= 300) {
-    print("response code: " + resp.statusCode.toString());
-    return "";
+    debugLog("response code: " + resp.statusCode.toString());
+    throw Exception("Request Failed");
   }
+
   return resp.body;
 }
 
-Future<void> getCalendarEvents(
+///
+/// カレンダーイベントを取得する
+/// 日付は年と月のみ採用
+///
+Future<List<String>> getCalendarEvents(
     DateTime start, DateTime end, String sessKey) async {
   String method = "core_calendar_get_calendar_monthly_view";
   List<Future<String>> futureList = [];
   int diffMonth = (end.year - start.year) * 12 + end.month - start.month;
-  if (diffMonth <= 0) return "";
+  if (diffMonth <= 0) return [];
   int nowMonth = start.month;
   int nowYear = start.year;
-  for (int month = 0; month < 1; month++) {
+  for (int count = 0; count < diffMonth; count += 1) {
     Map args = {
       "year": nowYear,
       "month": nowMonth,
@@ -63,5 +79,5 @@ Future<void> getCalendarEvents(
     futureList.add(_request(method, args, sessKey));
   }
   List<String> result = await Future.wait(futureList);
-  print(result);
+  return result;
 }
