@@ -30,6 +30,9 @@ dependencies:
   cookie_jar: ^2.0.0
   http: ^0.13.1
   webview_cookie_manager: ^2.0.0
+  google_fonts: ^2.1.0
+  flutter_html: ^2.1.2
+  url_launcher: ^6.0.10
 
 
   # The following adds the Cupertino Icons font to your application.

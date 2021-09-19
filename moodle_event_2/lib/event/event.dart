@@ -2,8 +2,12 @@
 /// 一つのイベントを管理するクラス
 ///
 
-class Event {
+class Event implements Comparable<Event> {
+  static final CATEGORY_USER = "user";
+  static final CATEGORY_COURSE = "course";
+
   int _eventId; //イベントID
+  int _eventInstance; //インスタンスID
   String _categoryName; //カテゴリ名
   String _courseName; //コース名
   String _title; //タイトル
@@ -12,23 +16,23 @@ class Event {
   DateTime _endTime; //終了時間
   bool isSubmit = true; //提出済みか
 
-  Event(int eventId, String title, String description, String categoryName,
-      String courseName, DateTime endTime,
-      {DateTime startTime, this.isSubmit}) {
+  ///
+  /// コンストラクタ
+  ///
+  Event(int eventId, int eventInstance, String title, String description,
+      String categoryName, String courseName, DateTime endTime,
+      {DateTime startTime, this.isSubmit = true}) {
     this._eventId = eventId;
+    this._eventInstance = eventInstance;
     this._title = title;
     this._description = description;
     this._categoryName = categoryName;
     this._courseName = courseName;
-    this._endTime = endTime;
-    this._startTime = startTime;
-    if (this._startTime != null &&
-        this._endTime.compareTo(this._startTime) < 0) {
-      throw Exception("開始時間が終了時間よりも後に設定されました。");
-    }
+    this.setTime(endTime, start: startTime);
   }
 
   int get eventId => this._eventId;
+  int get eventInstance => this._eventInstance;
   String get title => this._title;
   String get description => this._description;
   String get categoryName => this._categoryName;
@@ -46,6 +50,16 @@ class Event {
       }
     }
     return true;
+  }
+
+  ///
+  /// この課題がすでに終了しているか
+  ///
+  bool isAlreadyEnded() {
+    if (this.endTime.compareTo(DateTime.now()) < 0) {
+      return true;
+    }
+    return false;
   }
 
   ///
@@ -79,5 +93,12 @@ class Event {
   @override
   String toString() {
     return this.title;
+  }
+
+  @override
+  int compareTo(Event other) {
+    return this
+        .getRepresentativeTime()
+        .compareTo(other.getRepresentativeTime());
   }
 }

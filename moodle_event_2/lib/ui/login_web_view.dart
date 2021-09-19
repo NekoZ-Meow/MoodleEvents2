@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:moodle_event_2/Constants/Constants.dart';
-import "package:moodle_event_2/Utility/DebugUtility.dart";
+import "package:moodle_event_2/Utility/debug_utility.dart";
+import 'package:moodle_event_2/constants/string_constants.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-enum _PageState {
+enum PageState {
   Undefined,
   Redirect,
   FirstLogin,
@@ -16,29 +16,28 @@ enum _PageState {
 
 class LoginWebView extends StatelessWidget {
   WebViewController _webViewController;
-  _PageState _pageState = _PageState.Undefined;
+  PageState _pageState = PageState.Undefined;
   bool _isUrlLoading = false;
   bool _popWhenAuthorized = false;
-  BuildContext _context;
+
+  PageState get pageState => this._pageState;
 
   ///
   /// コンストラクタ
   ///
-  LoginWebView({Key key, bool popWhenAuthorized = false, BuildContext context})
-      : super(key: key) {
+  LoginWebView({Key key, bool popWhenAuthorized = false}) : super(key: key) {
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
     this._popWhenAuthorized = popWhenAuthorized;
-    this._context = context;
   }
 
   ///
   /// 認証済みか
   ///
   Future<bool> isAuthorized() async {
-    await this._loadUrl(Constants.MOODLE_AUTH_URL);
-    await Future.doWhile(() => (this._pageState == _PageState.Redirect));
+    await this._loadUrl(StringConstants.MOODLE_AUTH_URL);
+    await Future.doWhile(() => (this._pageState == PageState.Redirect));
 
-    if (this._pageState == _PageState.Finish)
+    if (this._pageState == PageState.Finish)
       return true;
     else
       return false;
@@ -49,7 +48,7 @@ class LoginWebView extends StatelessWidget {
   ///
   Future<String> getSessionKey() async {
     String sess = "";
-    if (this._pageState == _PageState.Finish) {
+    if (this._pageState == PageState.Finish) {
       sess = await this._webViewController.evaluateJavascript(
           '(function (){return YUI.config["global"]["M"]["cfg"]["sesskey"];})()');
     }
@@ -61,7 +60,7 @@ class LoginWebView extends StatelessWidget {
   /// URLをロードする
   ///
   Future<void> _loadUrl(String url) async {
-    this._pageState = _PageState.Undefined;
+    this._pageState = PageState.Undefined;
     this._isUrlLoading = true;
     await this._webViewController.loadUrl(url);
     await Future.doWhile(() async {
@@ -83,22 +82,22 @@ class LoginWebView extends StatelessWidget {
   ///
   /// URLごとの処理
   ///
-  Future<void> _urlMatching(String url) async {
-    if (Constants.GAKUNIN_REG_EXP.hasMatch(url)) {
+  Future<void> _urlMatching(String url, BuildContext context) async {
+    if (StringConstants.GAKUNIN_REG_EXP.hasMatch(url)) {
       debugLog("login page");
       if (await this._isFirstLoginPage()) {
-        this._pageState = _PageState.FirstLogin;
+        this._pageState = PageState.FirstLogin;
       } else {
-        this._pageState = _PageState.SecondLogin;
+        this._pageState = PageState.SecondLogin;
       }
-    } else if (Constants.MOODLE_REG_EXP.hasMatch(url)) {
+    } else if (StringConstants.MOODLE_REG_EXP.hasMatch(url)) {
       debugLog("load fin");
-      this._pageState = _PageState.Finish;
+      this._pageState = PageState.Finish;
       if (this._popWhenAuthorized) {
-        Navigator.of(this._context).pop();
+        Navigator.of(context).pop(await this.getSessionKey());
       }
-    } else if (new RegExp(Constants.MOODLE_AUTH_URL).hasMatch(url)) {
-      this._pageState = _PageState.Redirect;
+    } else if (new RegExp(StringConstants.MOODLE_AUTH_URL).hasMatch(url)) {
+      this._pageState = PageState.Redirect;
     }
   }
 
@@ -108,12 +107,12 @@ class LoginWebView extends StatelessWidget {
       visible: true,
       child: Container(
         child: WebView(
-          initialUrl: Constants.MOODLE_AUTH_URL,
+          initialUrl: StringConstants.MOODLE_AUTH_URL,
           javascriptMode: JavascriptMode.unrestricted,
           onPageFinished: (url) async {
             this._isUrlLoading = false;
             debugLog(url);
-            await this._urlMatching(url);
+            await this._urlMatching(url, context);
           },
           onWebViewCreated: (WebViewController controller) {
             this._webViewController = controller;

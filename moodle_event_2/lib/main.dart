@@ -1,7 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:moodle_event_2/ui/LoginWidget.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:moodle_event_2/ui/root_widget.dart';
+
+import 'constants/color_constants.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,18 +19,19 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
+        textTheme: TextTheme(
+            headline2: GoogleFonts.openSans(
+                color: ColorConstants.TEXT_MAIN,
+                fontSize: 14,
+                fontWeight: FontWeight.w500),
+            headline3: GoogleFonts.openSans(
+                color: ColorConstants.TEXT_MAIN,
+                fontSize: 19,
+                fontWeight: FontWeight.w500),
+            subtitle2: TextStyle(color: ColorConstants.TEXT_SUB, fontSize: 12)),
       ),
-      home: LoginWidget(),
+      home: RootWidget(),
     );
   }
 }

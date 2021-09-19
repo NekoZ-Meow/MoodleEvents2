@@ -1,4 +1,4 @@
-class Constants {
+class StringConstants {
   static const String MOODLE_AUTH_URL =
       "https://cclms.kyoto-su.ac.jp/auth/shibboleth/";
 
