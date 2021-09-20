@@ -1,60 +1,43 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:path_provider/path_provider.dart';
-
-final String userFileName = "user"; // ファイル名
-final String fileVersion = "0"; //ファイルバージョン
+import 'package:moodle_event_2/utility/debug_utility.dart';
 
 ///
 /// ユーザデータを管理するクラス
 ///
 class UserManager {
+  static final String userFileName = "user"; // ファイル名
+  static final String fileVersion = "0"; //ファイルバージョン
+
   String userId = ""; //ユーザID
   String password = ""; //パスワード
   String authKey = ""; //二段階認証秘密鍵
   String sessKey = ""; //セッションキー
 
   UserManager() {
-    this._readUserFile();
+    //this.readUserFile();
   }
 
   ///
-  /// Userファイルからデータを読み取る
+  /// jsonからこのクラスに変換する
   ///
-  Future<void> _readUserFile() async {
-    Directory directory = await getApplicationDocumentsDirectory();
-    String filePath = directory.path + "/" + userFileName;
-    File aFile = File(filePath);
-    if (!await aFile.exists()) {
-      await this._createUserFile(aFile);
+  UserManager.fromJson(Map<String, dynamic> json) {
+    if (json["version"] != fileVersion) {
+      debugLog("file version dose not same.");
       return;
     }
-
-    Map<String, dynamic> jsonString = jsonDecode(await aFile.readAsString());
-    String version = jsonString["version"];
-    if (version != fileVersion) {
-      _createUserFile(aFile);
-      return;
-    }
-
-    this.userId = jsonString["userId"];
-    this.password = jsonString["password"];
-    this.authKey = jsonString["authKey"];
+    this.userId = json["userId"];
+    this.password = json["password"];
+    this.authKey = json["authKey"];
+    this.sessKey = json["sessKey"];
   }
 
   ///
-  /// Userファイルを新規作成する
+  /// このクラスをJsonに変換する
   ///
-  Future<void> _createUserFile(File aFile) async {
-    await aFile.create();
-    print("File Created:" + aFile.path);
-    await aFile.writeAsString(jsonEncode({
-      "version": fileVersion,
-      "userId": this.userId,
-      "password": this.password,
-      "authKey": this.authKey
-    }));
-  }
+  Map<String, dynamic> toJson() => {
+        "version": fileVersion,
+        "userId": this.userId,
+        "password": this.password,
+        "authKey": this.authKey,
+        "sessKey": this.sessKey,
+      };
 }

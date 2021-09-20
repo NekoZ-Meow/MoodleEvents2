@@ -46,7 +46,7 @@ Future<String> _request(String method, Map args, String sessKey) async {
 
   if (resp.statusCode >= 300) {
     debugLog("response code: " + resp.statusCode.toString());
-    throw Exception("Request Failed");
+    throw SocketException("Request Failed");
   }
 
   return resp.body;

@@ -16,6 +16,9 @@ class _RootWebView extends State<RootWidget> {
   @override
   void initState() {
     super.initState();
+    this._model.load().then((_) {
+      this.setState(() {});
+    });
   }
 
   @override
@@ -25,8 +28,9 @@ class _RootWebView extends State<RootWidget> {
         title: Text("Moodle Events"),
       ),
       body: Padding(
-          padding: EdgeInsets.all(MarginConstants.BASE_MARGIN),
-          child: EventListWidget(this._model)),
+        padding: EdgeInsets.all(MarginConstants.BASE_MARGIN),
+        child: EventListWidget(this._model),
+      ),
     );
   }
 }

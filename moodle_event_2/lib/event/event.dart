@@ -31,6 +31,34 @@ class Event implements Comparable<Event> {
     this.setTime(endTime, start: startTime);
   }
 
+  Event.fromJson(Map<String, dynamic> json) {
+    this._eventId = json["eventId"];
+    this._eventInstance = json["eventInstance"];
+    this._categoryName = json["categoryName"];
+    this._courseName = json["courseName"];
+    this._title = json["title"];
+    this._description = json["description"];
+    if (json["startTime"] != null) {
+      this._startTime = DateTime.fromMillisecondsSinceEpoch(json["startTime"]);
+    }
+    this._endTime = DateTime.fromMillisecondsSinceEpoch(json["endTime"]);
+    this.isSubmit = json["isSubmit"];
+  }
+
+  Map<String, dynamic> toJson() => {
+        "eventId": this._eventId,
+        "eventInstance": this._eventInstance,
+        "categoryName": this._categoryName,
+        "courseName": this._courseName,
+        "title": this._title,
+        "description": this._description,
+        "startTime": (this._startTime != null)
+            ? this._startTime.millisecondsSinceEpoch
+            : null,
+        "endTime": this._endTime.millisecondsSinceEpoch,
+        "isSubmit": this.isSubmit,
+      };
+
   int get eventId => this._eventId;
   int get eventInstance => this._eventInstance;
   String get title => this._title;

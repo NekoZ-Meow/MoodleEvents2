@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:moodle_event_2/event/event.dart';
 import 'package:moodle_event_2/model/model.dart';
@@ -13,7 +15,7 @@ import 'login_web_view.dart';
 ///
 class EventListWidget extends StatefulWidget {
   final Model model;
-  EventListWidget(this.model, {Key key}) : super(key: key);
+  const EventListWidget(this.model, {Key key}) : super(key: key);
 
   @override
   _EventListWidgetState createState() => _EventListWidgetState();
@@ -38,21 +40,26 @@ class _EventListWidgetState extends State<EventListWidget> {
           ),
         );
       }
+      if (await isSessKeyValid(sessKey)) {
+        widget.model.user.sessKey = sessKey;
+        List<Event> events = await getEvents(
+            DateTime(2021, 1), DateTime(2021, 12), widget.model.user.sessKey);
+        if (this.mounted) {
+          this.setState(() {
+            widget.model.updateEventList(events);
+          });
+          await widget.model.save();
+        }
+      } else {
+        throw Exception("sessKey is invalid");
+      }
+    } on SocketException catch (exception) {
+      debugLog(exception.toString());
+      ErrorDialog.showErrorDialog(context, "正しく通信できませんでした");
     } catch (exception) {
       debugLog(exception.toString());
+      ErrorDialog.showErrorDialog(context, "正しくログインできませんでした");
     }
-
-    if (await isSessKeyValid(sessKey)) {
-      widget.model.user.sessKey = sessKey;
-      List<Event> events = await getEvents(
-          DateTime(2021, 1), DateTime(2021, 12), widget.model.user.sessKey);
-      this.setState(() {
-        widget.model.updateEventList(events);
-      });
-    } else {
-      ErrorDialog.showErrorDialog(context, "正しく更新できませんでした");
-    }
-
     return;
   }
 
@@ -63,6 +70,7 @@ class _EventListWidgetState extends State<EventListWidget> {
     return RefreshIndicator(
       onRefresh: this.onRefresh,
       child: ListView(
+        key: PageStorageKey(0),
         children: listItems,
       ),
     );
