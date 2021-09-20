@@ -5,24 +5,20 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:moodle_event_2/constants/color_constants.dart';
 import 'package:moodle_event_2/constants/margin_constants.dart';
 import 'package:moodle_event_2/event/event.dart';
+import 'package:moodle_event_2/ui/popup_menu_widget.dart';
 import 'package:moodle_event_2/utility/event_utility.dart';
 import "package:url_launcher/url_launcher.dart";
 
-final double SUB_TEXT_MARGIN = 10;
+const double SUB_TEXT_MARGIN = 10;
 
-class EventDetailWidget extends StatefulWidget {
+class EventDetailWidget extends StatelessWidget {
   final Event event;
-  const EventDetailWidget(this.event, {Key key}) : super(key: key);
+  const EventDetailWidget(this.event, {Key? key}) : super(key: key);
 
-  @override
-  _EventDetailWidgetState createState() => _EventDetailWidgetState();
-}
-
-class _EventDetailWidgetState extends State<EventDetailWidget> {
   @override
   Widget build(BuildContext context) {
-    final DateTime startTime = widget.event.startTime;
-    final DateTime endTime = widget.event.endTime;
+    final DateTime? startTime = this.event.startTime;
+    final DateTime endTime = this.event.endTime;
     String startTimeText;
     String endTimeText;
     String submitText;
@@ -37,10 +33,10 @@ class _EventDetailWidgetState extends State<EventDetailWidget> {
     endTimeText =
         "${endTime.year}年${endTime.month}月${endTime.day}日 ${endTime.hour.toString().padLeft(2, "0")}:${endTime.minute.toString().padLeft(2, "0")}";
 
-    if (widget.event.categoryName == Event.CATEGORY_USER) {
+    if (this.event.categoryName == Event.CATEGORY_USER) {
       submitText = "ーーーー";
       submitTextColor = ColorConstants.TEXT_ENDED;
-    } else if (widget.event.isSubmit) {
+    } else if (this.event.isSubmit) {
       submitText = "提出済み";
       submitTextColor = ColorConstants.TEXT_SAFE;
     } else {
@@ -50,7 +46,10 @@ class _EventDetailWidgetState extends State<EventDetailWidget> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("イベント詳細"),
+        title: const Text("イベント詳細"),
+        actions: [
+          PopupMenuWidget(this.event),
+        ],
       ),
       body: Padding(
         padding: EdgeInsets.all(MarginConstants.BASE_MARGIN),
@@ -58,32 +57,32 @@ class _EventDetailWidgetState extends State<EventDetailWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.only(top: 5, bottom: 10),
+              padding: const EdgeInsets.only(top: 5, bottom: 10),
               child: Text(
-                widget.event.title,
+                this.event.title,
                 style: Theme.of(context).textTheme.headline3,
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.only(bottom: 10),
               child: Text(
-                widget.event.courseName,
-                style: TextStyle(color: ColorConstants.TEXT_SUB),
+                this.event.courseName,
+                style: const TextStyle(color: ColorConstants.TEXT_SUB),
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(bottom: SUB_TEXT_MARGIN),
+              padding: const EdgeInsets.only(bottom: SUB_TEXT_MARGIN),
               child: Text(
                 "開始時刻  ${startTimeText}",
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(bottom: SUB_TEXT_MARGIN),
+              padding: const EdgeInsets.only(bottom: SUB_TEXT_MARGIN),
               child: Text("終了時刻  ${endTimeText}"),
             ),
-            _EventDetailSubmitWidget(widget.event),
+            _EventDetailSubmitWidget(this.event),
             Padding(
-              padding: EdgeInsets.only(bottom: SUB_TEXT_MARGIN * 2),
+              padding: const EdgeInsets.only(bottom: SUB_TEXT_MARGIN * 2),
               child: Row(
                 children: [
                   const Text("提出状況  "),
@@ -91,20 +90,19 @@ class _EventDetailWidgetState extends State<EventDetailWidget> {
                 ],
               ),
             ),
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(bottom: SUB_TEXT_MARGIN),
-              child: Row(
-                children: [
-                  Text("説明",
-                      style: TextStyle(color: ColorConstants.TEXT_ENDED)),
-                ],
-              ),
+              child: Text("説明",
+                  style: TextStyle(color: ColorConstants.TEXT_ENDED)),
             ),
             Expanded(
               child: SingleChildScrollView(
                 child: Html(
-                  data: widget.event.description,
+                  data: this.event.description,
                   onLinkTap: (url, _, __, ___) async {
+                    if (url == null) {
+                      return;
+                    }
                     if (await canLaunch(url)) {
                       await launch(url);
                     }
@@ -121,7 +119,7 @@ class _EventDetailWidgetState extends State<EventDetailWidget> {
 
 class _EventDetailSubmitWidget extends StatefulWidget {
   final Event event;
-  const _EventDetailSubmitWidget(this.event, {Key key}) : super(key: key);
+  const _EventDetailSubmitWidget(this.event, {Key? key}) : super(key: key);
 
   @override
   _EventDetailSubmitWidgetState createState() =>
@@ -129,37 +127,59 @@ class _EventDetailSubmitWidget extends StatefulWidget {
 }
 
 class _EventDetailSubmitWidgetState extends State<_EventDetailSubmitWidget> {
-  Timer _dateTimer;
+  final _onTimeChange = StreamController<List<Widget>>();
+  Timer? _dateTimer;
+
+  ///
+  /// 締め切りのテキストを更新する
+  ///
+  void _updateDeadlineText() {
+    this._onTimeChange.sink.add([
+      Text("${getEventDatePrefix(widget.event, isEventDetail: true)}  "),
+      Text(
+        getEventFullDateText(widget.event),
+        style: TextStyle(color: getEventDateColor(widget.event)),
+      ),
+    ]);
+
+    return;
+  }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    this._dateTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-      this.setState(() {});
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    this._updateDeadlineText();
+    this._dateTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      this._updateDeadlineText();
     });
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    if (this._dateTimer != null) {
+      this._dateTimer!.cancel();
+    }
+    this._onTimeChange.close();
     super.dispose();
-    this._dateTimer.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: SUB_TEXT_MARGIN),
-      child: Row(
-        children: [
-          Text("${getEventDatePrefix(widget.event, isEventDetail: true)}  "),
-          Text(
-            getEventFullDateText(widget.event),
-            style: TextStyle(color: getEventDateColor(widget.event)),
-          ),
-        ],
-      ),
-    );
+        padding: const EdgeInsets.only(bottom: SUB_TEXT_MARGIN),
+        child: StreamBuilder(
+          stream: this._onTimeChange.stream,
+          builder:
+              (BuildContext context, AsyncSnapshot<List<Widget>> snapShot) {
+            return Row(
+              children: (snapShot.hasData) ? snapShot.data! : const [],
+            );
+          },
+        ));
   }
 }

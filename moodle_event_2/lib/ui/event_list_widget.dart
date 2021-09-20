@@ -15,7 +15,7 @@ import 'login_web_view.dart';
 ///
 class EventListWidget extends StatefulWidget {
   final Model model;
-  const EventListWidget(this.model, {Key key}) : super(key: key);
+  const EventListWidget(this.model, {Key? key}) : super(key: key);
 
   @override
   _EventListWidgetState createState() => _EventListWidgetState();
@@ -48,7 +48,11 @@ class _EventListWidgetState extends State<EventListWidget> {
           this.setState(() {
             widget.model.updateEventList(events);
           });
-          await widget.model.save();
+          try {
+            await widget.model.save();
+          } catch (exception) {
+            ErrorDialog.showErrorDialog(context, "データの保存に失敗しました");
+          }
         }
       } else {
         throw Exception("sessKey is invalid");
@@ -66,11 +70,11 @@ class _EventListWidgetState extends State<EventListWidget> {
   @override
   Widget build(BuildContext context) {
     List<Widget> listItems =
-        widget.model.events.map((event) => new EventCard(event)).toList();
+        widget.model.events.map((event) => EventCardWidget(event)).toList();
     return RefreshIndicator(
       onRefresh: this.onRefresh,
       child: ListView(
-        key: PageStorageKey(0),
+        key: const PageStorageKey(0),
         children: listItems,
       ),
     );

@@ -56,7 +56,7 @@ class LoginWidgetState extends State<LoginWidget> {
   ///
   /// セッションキー(sess)を取得する
   ///
-  Future<String> getSessionKey() async {
+  Future<String?> getSessionKey() async {
     if (await this.waitLogin()) {
       return await this._loginWebView.getSessionKey();
     }

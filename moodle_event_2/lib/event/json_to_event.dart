@@ -28,7 +28,10 @@ Map<int, Event> calenderJsonToEventsMap(List<dynamic> topElements) {
           LinkedHashMap<String, dynamic> eventMap =
               eventElement as LinkedHashMap<String, dynamic>;
 
-          Event createdEvent = _eventMapToEvent(eventMap);
+          Event? createdEvent = _eventMapToEvent(eventMap);
+          if (createdEvent == null) {
+            return;
+          }
 
           ///
           /// ユーザイベントの時の処理
@@ -42,7 +45,10 @@ Map<int, Event> calenderJsonToEventsMap(List<dynamic> topElements) {
           }
 
           if (idEventMap.containsKey(createdEvent.eventInstance)) {
-            Event mappedEvent = idEventMap[createdEvent.eventInstance];
+            Event mappedEvent = idEventMap[createdEvent.eventInstance]!;
+            if (mappedEvent.startTime != null) {
+              return;
+            }
             DateTime time1 = createdEvent.endTime;
             DateTime time2 = mappedEvent.endTime;
             if (time1.compareTo(time2) < 0) {
@@ -52,7 +58,7 @@ Map<int, Event> calenderJsonToEventsMap(List<dynamic> topElements) {
             }
             return;
           }
-          idEventMap[createdEvent.eventInstance] = createdEvent;
+          idEventMap[createdEvent.eventInstance!] = createdEvent;
         });
       });
     });
@@ -64,24 +70,39 @@ Map<int, Event> calenderJsonToEventsMap(List<dynamic> topElements) {
 ///
 /// jsonから取得したLinkedHashMapのイベントデータをEventクラスへ変換する
 ///
-Event _eventMapToEvent(Map<String, dynamic> eventMap) {
-  int id = eventMap["id"] as int; //id
-  int instance = eventMap["instance"] as int; //インスタンスid
-  String title = eventMap["name"]; //名前
-  String description = eventMap["description"]; //詳細
-  String categoryName = eventMap["normalisedeventtype"]; //カテゴリ名
+Event? _eventMapToEvent(Map<String, dynamic> eventMap) {
+  int? id = eventMap["id"]; //id
+  int? instance = eventMap["instance"]; //インスタンスid
+  String? title = eventMap["name"]; //名前
+  String? description = eventMap["description"]; //詳細
+  String? categoryName = eventMap["normalisedeventtype"]; //カテゴリ名
+  String? url = eventMap["url"];
+
+  if (id == null || title == null || categoryName == null || url == null) {
+    return null;
+  }
+  description ??= "なし";
 
   ///
   ///タイトルの取得
   ///
-  if (new RegExp(r"(」の提出期限.+)$").hasMatch(title)) {
-    title = new RegExp(r"「.+」").firstMatch(title).group(0);
-    title = title.substring(1, title.length - 1);
+  if (RegExp(r"(」の提出期限.+)$").hasMatch(title)) {
+    Match? match = RegExp(r"「.+」").firstMatch(title);
+    if (match != null) {
+      title = match.group(0)!;
+      title = title.substring(1, title.length - 1);
+    }
+  } else if (RegExp(r"(」開始)$").hasMatch(title)) {
+    Match? match = RegExp(r"「.+」").firstMatch(title);
+    if (match != null) {
+      title = match.group(0)!;
+      title = title.substring(1, title.length - 1);
+    }
   }
   if (eventMap["modulename"] == "quiz") {
-    title = title.replaceFirst(new RegExp(r" (終了|開始)$"), "");
+    title = title.replaceFirst(RegExp(r" (終了|開始)$"), "");
   }
-  title = title.replaceAll(new RegExp(r"( の(受験).+(終了|開始))$"), "");
+  title = title.replaceAll(RegExp(r"( の(受験).+(終了|開始))$"), "");
 
   ///
   ///カテゴリ名の取得
@@ -97,7 +118,7 @@ Event _eventMapToEvent(Map<String, dynamic> eventMap) {
   /// 時間の取得
   ///
   DateTime endTime;
-  DateTime startTime;
+  DateTime? startTime;
   int timeDuration = eventMap["timeduration"] as int;
   int unixTime = eventMap["timestart"] as int;
   if (timeDuration != 0) {
@@ -107,7 +128,7 @@ Event _eventMapToEvent(Map<String, dynamic> eventMap) {
     endTime = DateTime.fromMillisecondsSinceEpoch(unixTime * 1000);
   }
 
-  return new Event(
-      id, instance, title, description, categoryName, courseName, endTime,
+  return Event(
+      id, instance, title, description, categoryName, courseName, url, endTime,
       startTime: startTime);
 }

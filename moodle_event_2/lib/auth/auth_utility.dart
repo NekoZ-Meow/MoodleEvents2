@@ -27,7 +27,7 @@ Int8List binaryStringToByteArray(String binaryString) {
       aString = "0" + aString.substring(1);
       aInteger = -128 + int.parse(aString, radix: 2);
     } else {
-      aInteger = int.tryParse(aString, radix: 2);
+      aInteger = int.tryParse(aString, radix: 2)!;
     }
     if (aInteger > 127) {
       aInteger -= 128 + (aInteger - 128);

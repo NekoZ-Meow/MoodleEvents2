@@ -54,14 +54,14 @@ class Model {
         this._user = value;
       }),
       this._createEventsFromEventsFile(eventsFile).then((value) {
-        if (value == null) return;
+        if (value.isEmpty) return;
         this._events = value;
       }),
     ]);
     return;
   }
 
-  Future<UserManager> _createUserFromUserFile(File userFile) async {
+  Future<UserManager?> _createUserFromUserFile(File userFile) async {
     if (await userFile.exists()) {
       return UserManager.fromJson(json.decode(await userFile.readAsString()));
     } else {
@@ -74,7 +74,7 @@ class Model {
       List<dynamic> eventsJson = json.decode(await eventsFile.readAsString());
       return eventsJson.map((eventJson) => Event.fromJson(eventJson)).toList();
     } else {
-      return null;
+      return [];
     }
   }
 }

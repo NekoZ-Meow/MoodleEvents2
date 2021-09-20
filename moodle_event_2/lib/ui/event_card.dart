@@ -10,22 +10,17 @@ import 'package:moodle_event_2/utility/event_utility.dart';
 ///
 /// リスト表示の際のイベント1つを表すウィジェット
 ///
-class EventCard extends StatefulWidget {
+class EventCardWidget extends StatelessWidget {
   final Event event;
-  const EventCard(this.event, {Key key}) : super(key: key);
+  const EventCardWidget(this.event, {Key? key}) : super(key: key);
 
-  @override
-  _EventCardState createState() => _EventCardState();
-}
-
-class _EventCardState extends State<EventCard> {
   ///
   /// イベント詳細ウィジェットを表示する
   ///
-  void _goEventDetailWidget() {
-    Navigator.of(this.context).push(MaterialPageRoute(
+  void _goEventDetailWidget(BuildContext context) {
+    Navigator.of(context).push(MaterialPageRoute(
       builder: (context) {
-        return EventDetailWidget(widget.event);
+        return EventDetailWidget(this.event);
       },
     ));
   }
@@ -34,12 +29,12 @@ class _EventCardState extends State<EventCard> {
   /// 提出済みかのテキストを取得する
   ///
   Text _getSubmitText() {
-    if (widget.event.categoryName == Event.CATEGORY_USER) {
+    if (this.event.categoryName == Event.CATEGORY_USER) {
       return const Text(
         "-",
         style: TextStyle(color: ColorConstants.TEXT_ENDED),
       );
-    } else if (widget.event.isSubmit) {
+    } else if (this.event.isSubmit) {
       return const Text(
         "済",
         style: TextStyle(color: ColorConstants.TEXT_SAFE),
@@ -53,67 +48,65 @@ class _EventCardState extends State<EventCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: GestureDetector(
-        onTap: this._goEventDetailWidget,
-        child: Card(
-          child: Container(
-            height: (Theme.of(this.context).textTheme.headline2.fontSize) * 6,
-            padding: EdgeInsets.all(10),
-            child: Row(
-              children: [
-                ///
-                /// タイトルとコース名
-                ///
-                Expanded(
-                  flex: 6,
-                  child: Container(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.only(top: 5, bottom: 5),
-                          child: Text(
-                            widget.event.title,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(this.context).textTheme.headline2,
-                          ),
-                        ),
-                        Container(
-                          child: Text(
-                            widget.event.courseName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(this.context).textTheme.subtitle2,
-                          ),
-                        ),
-                      ],
+    return GestureDetector(
+      onTap: () {
+        this._goEventDetailWidget(context);
+
+        return;
+      },
+      child: Card(
+        child: Container(
+          height: (Theme.of(context).textTheme.headline2!.fontSize)! * 6,
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            children: [
+              ///
+              /// タイトルとコース名
+              ///
+              Expanded(
+                flex: 6,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.only(top: 5, bottom: 5),
+                      child: Text(
+                        this.event.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.headline2,
+                      ),
                     ),
-                  ),
+                    Text(
+                      this.event.courseName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.subtitle2,
+                    ),
+                  ],
                 ),
+              ),
 
-                ///
-                /// 提出済みかどうかのテキスト
-                ///
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: this._getSubmitText(),
-                  ),
+              ///
+              /// 提出済みかどうかのテキスト
+              ///
+              Expanded(
+                flex: 1,
+                child: Container(
+                  alignment: Alignment.center,
+                  child: this._getSubmitText(),
                 ),
+              ),
 
-                ///
-                /// 提出を表すウィジェット
-                ///
-                Expanded(
-                  flex: 3,
-                  child: _EventCardSubmitWidget(widget.event),
-                ),
-              ],
-            ),
+              ///
+              /// 提出を表すウィジェット
+              ///
+              Expanded(
+                flex: 3,
+                child: _EventCardSubmitWidget(this.event),
+              ),
+            ],
           ),
         ),
       ),
@@ -123,62 +116,97 @@ class _EventCardState extends State<EventCard> {
 
 class _EventCardSubmitWidget extends StatefulWidget {
   final Event event;
-  const _EventCardSubmitWidget(this.event, {Key key}) : super(key: key);
+  const _EventCardSubmitWidget(this.event, {Key? key}) : super(key: key);
 
   @override
   _EventCardSubmitWidgetState createState() => _EventCardSubmitWidgetState();
 }
 
 class _EventCardSubmitWidgetState extends State<_EventCardSubmitWidget> {
-  Timer _dateTimer;
+  final StreamController<Text> _onDatePrefixChange = StreamController<Text>();
+  final StreamController<Text> _onDateTextChange = StreamController<Text>();
+
+  Timer? _dateTimer;
   String _eventDateString = "";
+  String _eventDatePrefixString = "";
+
+  ///
+  /// 締め切りの文字を更新する
+  ///
+  void _updateDeadlineText() {
+    String newEventDateString = getEventDateText(widget.event);
+    String newEventDatePrefixString = getEventDatePrefix(widget.event);
+    if (newEventDateString != this._eventDateString) {
+      this._eventDateString = newEventDateString;
+      this._onDateTextChange.sink.add(Text(
+            this._eventDateString,
+            style: TextStyle(
+              color: getEventDateColor(widget.event),
+            ),
+          ));
+    }
+    if (newEventDatePrefixString != this._eventDatePrefixString) {
+      this._eventDatePrefixString = newEventDatePrefixString;
+      this._onDatePrefixChange.sink.add(Text(
+            this._eventDatePrefixString,
+            style: Theme.of(this.context).textTheme.subtitle2,
+          ));
+    }
+    return;
+  }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    this._eventDateString = getEventDateText(widget.event);
-    this._dateTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-      String newEventDateString = getEventDateText(widget.event);
-      if (newEventDateString != this._eventDateString) {
-        this.setState(() {
-          this._eventDateString = newEventDateString;
-        });
-      }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    this._updateDeadlineText();
+    this._dateTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      this._updateDeadlineText();
     });
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    this._dateTimer.cancel();
+    if (this._dateTimer != null) {
+      this._dateTimer!.cancel();
+    }
+    this._onDatePrefixChange.close();
+    this._onDateTextChange.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            margin: EdgeInsets.only(bottom: 10),
-            child: Text(
-              getEventDatePrefix(widget.event),
-              style: Theme.of(this.context).textTheme.subtitle2,
-            ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          child: StreamBuilder<Text>(
+            stream: this._onDatePrefixChange.stream,
+            builder: (BuildContext context, AsyncSnapshot<Text> snapShot) {
+              return (snapShot.hasData)
+                  ? snapShot.data!
+                  : const SizedBox.shrink();
+            },
           ),
-          Container(
-            margin: EdgeInsets.only(bottom: 10),
-            child: Text(
-              this._eventDateString,
-              style: TextStyle(
-                color: getEventDateColor(widget.event),
-              ),
-            ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          child: StreamBuilder<Text>(
+            stream: this._onDateTextChange.stream,
+            builder: (BuildContext context, AsyncSnapshot<Text> snapShot) {
+              return (snapShot.hasData)
+                  ? snapShot.data!
+                  : const SizedBox.shrink();
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

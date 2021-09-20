@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 ///
 class ErrorDialog extends StatelessWidget {
   final String message;
-  const ErrorDialog(this.message, {Key key}) : super(key: key);
+  const ErrorDialog(this.message, {Key? key}) : super(key: key);
 
   static void showErrorDialog(BuildContext context, String message) {
     showDialog(context: context, builder: (_) => ErrorDialog(message));
@@ -14,30 +14,28 @@ class ErrorDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: AlertDialog(
-        title: Row(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(right: 5),
-              child: Icon(
-                Icons.warning_amber_outlined,
-                color: Theme.of(context).primaryColor,
-              ),
-            ),
-            Text("エラー"),
-          ],
-        ),
-        content: Text(this.message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              "OK",
+    return AlertDialog(
+      title: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(right: 5),
+            child: Icon(
+              Icons.warning_amber_outlined,
+              color: Theme.of(context).primaryColor,
             ),
           ),
+          const Text("エラー"),
         ],
       ),
+      content: Text(this.message),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text(
+            "OK",
+          ),
+        ),
+      ],
     );
   }
 }

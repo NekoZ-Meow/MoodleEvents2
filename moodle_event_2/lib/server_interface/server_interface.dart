@@ -4,12 +4,12 @@ import 'dart:io';
 
 import "package:http/http.dart" as http;
 import 'package:moodle_event_2/Utility/debug_utility.dart';
-import "package:moodle_event_2/constants/string_constants.dart";
+import 'package:moodle_event_2/constants/string_constants.dart';
 import 'package:moodle_event_2/event/event.dart';
 import 'package:moodle_event_2/event/json_to_event.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
-final String baseUrl = "https://cclms.kyoto-su.ac.jp/lib/ajax/service.php";
+const String baseUrl = "https://cclms.kyoto-su.ac.jp/lib/ajax/service.php";
 
 String _getCookies(List<Cookie> cookies) {
   return cookies.map((cookie) => '${cookie.name}=${cookie.value}').join('; ');
@@ -46,7 +46,7 @@ Future<String> _request(String method, Map args, String sessKey) async {
 
   if (resp.statusCode >= 300) {
     debugLog("response code: " + resp.statusCode.toString());
-    throw SocketException("Request Failed");
+    throw const SocketException("Request Failed");
   }
 
   return resp.body;
@@ -104,7 +104,7 @@ Future<List<int>> _getActionEventIds(String sessKey) async {
     };
     List<dynamic> result = json.decode(await _request(method, args, sessKey));
     List<dynamic> events = result[0]["data"]["events"];
-    if (events.length == 0) break;
+    if (events.isEmpty) break;
     results.addAll(events.map((event) => event["instance"] as int));
     eventID = result[0]["data"]["lastid"];
   }
@@ -116,8 +116,8 @@ Future<List<int>> _getActionEventIds(String sessKey) async {
 ///
 Future<List<Event>> getEvents(
     DateTime start, DateTime end, String sessKey) async {
-  List<int> actionEventIds;
-  Map<int, Event> calendarEventsMap;
+  List<int> actionEventIds = [];
+  Map<int, Event> calendarEventsMap = {};
   await Future.wait([
     _getActionEventIds(sessKey).then((value) => actionEventIds = value),
     _getCalendarEventsMap(start, end, sessKey)
@@ -125,7 +125,7 @@ Future<List<Event>> getEvents(
   ]);
   actionEventIds.forEach((id) {
     if (calendarEventsMap.containsKey(id)) {
-      calendarEventsMap[id].isSubmit = false;
+      calendarEventsMap[id]!.isSubmit = false;
     }
   });
 

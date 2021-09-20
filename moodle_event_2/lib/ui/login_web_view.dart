@@ -6,7 +6,7 @@ import "package:moodle_event_2/Utility/debug_utility.dart";
 import 'package:moodle_event_2/constants/string_constants.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-enum PageState {
+enum _PageState {
   Undefined,
   Redirect,
   FirstLogin,
@@ -15,17 +15,15 @@ enum PageState {
 }
 
 class LoginWebView extends StatelessWidget {
-  WebViewController _webViewController;
-  PageState _pageState = PageState.Undefined;
+  WebViewController? _webViewController;
+  _PageState _pageState = _PageState.Undefined;
   bool _isUrlLoading = false;
   bool _popWhenAuthorized = false;
-
-  PageState get pageState => this._pageState;
 
   ///
   /// コンストラクタ
   ///
-  LoginWebView({Key key, bool popWhenAuthorized = false}) : super(key: key) {
+  LoginWebView({Key? key, bool popWhenAuthorized = false}) : super(key: key) {
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
     this._popWhenAuthorized = popWhenAuthorized;
   }
@@ -35,12 +33,12 @@ class LoginWebView extends StatelessWidget {
   ///
   Future<bool> isAuthorized() async {
     await this._loadUrl(StringConstants.MOODLE_AUTH_URL);
-    await Future.doWhile(() => (this._pageState == PageState.Redirect));
+    await Future.doWhile(() => (this._pageState == _PageState.Redirect));
 
-    if (this._pageState == PageState.Finish)
+    if (this._pageState == _PageState.Finish) {
       return true;
-    else
-      return false;
+    }
+    return false;
   }
 
   ///
@@ -48,8 +46,9 @@ class LoginWebView extends StatelessWidget {
   ///
   Future<String> getSessionKey() async {
     String sess = "";
-    if (this._pageState == PageState.Finish) {
-      sess = await this._webViewController.evaluateJavascript(
+    if (this._webViewController != null &&
+        this._pageState == _PageState.Finish) {
+      sess = await this._webViewController!.evaluateJavascript(
           '(function (){return YUI.config["global"]["M"]["cfg"]["sesskey"];})()');
     }
 
@@ -60,11 +59,14 @@ class LoginWebView extends StatelessWidget {
   /// URLをロードする
   ///
   Future<void> _loadUrl(String url) async {
-    this._pageState = PageState.Undefined;
+    if (this._webViewController == null) {
+      return;
+    }
+    this._pageState = _PageState.Undefined;
     this._isUrlLoading = true;
-    await this._webViewController.loadUrl(url);
+    await this._webViewController!.loadUrl(url);
     await Future.doWhile(() async {
-      await new Future.delayed(new Duration(milliseconds: 100));
+      await new Future.delayed(Duration(milliseconds: 100));
       return this._isUrlLoading;
     });
   }
@@ -73,8 +75,11 @@ class LoginWebView extends StatelessWidget {
   /// 1段階目の認証ページか
   ///
   Future<bool> _isFirstLoginPage() async {
+    if (this._webViewController == null) {
+      return false;
+    }
     return await this
-            ._webViewController
+            ._webViewController!
             .evaluateJavascript("document.getElementById('username')") !=
         "null";
   }
@@ -86,38 +91,35 @@ class LoginWebView extends StatelessWidget {
     if (StringConstants.GAKUNIN_REG_EXP.hasMatch(url)) {
       debugLog("login page");
       if (await this._isFirstLoginPage()) {
-        this._pageState = PageState.FirstLogin;
+        this._pageState = _PageState.FirstLogin;
       } else {
-        this._pageState = PageState.SecondLogin;
+        this._pageState = _PageState.SecondLogin;
       }
     } else if (StringConstants.MOODLE_REG_EXP.hasMatch(url)) {
       debugLog("load fin");
-      this._pageState = PageState.Finish;
+      this._pageState = _PageState.Finish;
       if (this._popWhenAuthorized) {
         Navigator.of(context).pop(await this.getSessionKey());
       }
-    } else if (new RegExp(StringConstants.MOODLE_AUTH_URL).hasMatch(url)) {
-      this._pageState = PageState.Redirect;
+    } else if (RegExp(StringConstants.MOODLE_AUTH_URL).hasMatch(url)) {
+      this._pageState = _PageState.Redirect;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Visibility(
-      visible: true,
-      child: Container(
-        child: WebView(
-          initialUrl: StringConstants.MOODLE_AUTH_URL,
-          javascriptMode: JavascriptMode.unrestricted,
-          onPageFinished: (url) async {
-            this._isUrlLoading = false;
-            debugLog(url);
-            await this._urlMatching(url, context);
-          },
-          onWebViewCreated: (WebViewController controller) {
-            this._webViewController = controller;
-          },
-        ),
+    return SafeArea(
+      child: WebView(
+        initialUrl: StringConstants.MOODLE_AUTH_URL,
+        javascriptMode: JavascriptMode.unrestricted,
+        onPageFinished: (url) async {
+          this._isUrlLoading = false;
+          debugLog(url);
+          await this._urlMatching(url, context);
+        },
+        onWebViewCreated: (WebViewController controller) {
+          this._webViewController = controller;
+        },
       ),
     );
   }
