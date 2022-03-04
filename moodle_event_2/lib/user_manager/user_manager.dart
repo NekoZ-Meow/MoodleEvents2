@@ -4,8 +4,8 @@ import 'package:moodle_event_2/utility/debug_utility.dart';
 /// ユーザデータを管理するクラス
 ///
 class UserManager {
-  static final String userFileName = "user"; // ファイル名
-  static final String fileVersion = "0"; //ファイルバージョン
+  static const String userFileName = "user"; // ファイル名
+  static const String fileVersion = "0"; //ファイルバージョン
 
   String userId = ""; //ユーザID
   String password = ""; //パスワード

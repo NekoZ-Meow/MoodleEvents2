@@ -1,3 +1,3 @@
 class MarginConstants {
-  static final double BASE_MARGIN = 10;
+  static const double BASE_MARGIN = 10;
 }

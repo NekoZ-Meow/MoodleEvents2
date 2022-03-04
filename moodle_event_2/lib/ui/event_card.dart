@@ -32,17 +32,17 @@ class EventCardWidget extends StatelessWidget {
     if (this.event.categoryName == Event.CATEGORY_USER) {
       return const Text(
         "-",
-        style: TextStyle(color: ColorConstants.TEXT_ENDED),
+        style: TextStyle(color: ColorConstants.textEnded),
       );
     } else if (this.event.isSubmit) {
       return const Text(
         "済",
-        style: TextStyle(color: ColorConstants.TEXT_SAFE),
+        style: TextStyle(color: ColorConstants.textSafe),
       );
     }
     return const Text(
       "未",
-      style: TextStyle(color: ColorConstants.TEXT_DANGER),
+      style: TextStyle(color: ColorConstants.textDanger),
     );
   }
 

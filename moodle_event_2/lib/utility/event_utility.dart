@@ -74,13 +74,13 @@ Color getEventDateColor(Event event) {
   DateTime eventTime = event.getRepresentativeTime();
   Duration difference = eventTime.difference(DateTime.now());
   if (difference.inDays > 3) {
-    return ColorConstants.TEXT_SAFE;
+    return ColorConstants.textSafe;
   } else if (difference.inDays > 1) {
-    return ColorConstants.TEXT_WARNING;
+    return ColorConstants.textWarning;
   } else if (difference.inSeconds < 0) {
-    return ColorConstants.TEXT_ENDED;
+    return ColorConstants.textEnded;
   }
-  return ColorConstants.TEXT_DANGER;
+  return ColorConstants.textDanger;
 }
 
 ///

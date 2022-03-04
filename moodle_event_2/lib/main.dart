@@ -22,14 +22,14 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         textTheme: TextTheme(
             headline2: GoogleFonts.openSans(
-                color: ColorConstants.TEXT_MAIN,
+                color: ColorConstants.textMain,
                 fontSize: 14,
                 fontWeight: FontWeight.w500),
             headline3: GoogleFonts.openSans(
-                color: ColorConstants.TEXT_MAIN,
+                color: ColorConstants.textMain,
                 fontSize: 19,
                 fontWeight: FontWeight.w500),
-            subtitle2: TextStyle(color: ColorConstants.TEXT_SUB, fontSize: 12)),
+            subtitle2: TextStyle(color: ColorConstants.textSub, fontSize: 12)),
       ),
       home: RootWidget(),
     );

@@ -9,6 +9,11 @@ import 'package:provider/provider.dart';
 
 import 'root_widget.dart';
 
+///
+/// 認証自動化する際に使用する予定
+///
+
+
 class LoginWidget extends StatefulWidget {
   @override
   LoginWidgetState createState() => LoginWidgetState();

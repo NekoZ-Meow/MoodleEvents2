@@ -35,13 +35,13 @@ class EventDetailWidget extends StatelessWidget {
 
     if (this.event.categoryName == Event.CATEGORY_USER) {
       submitText = "ーーーー";
-      submitTextColor = ColorConstants.TEXT_ENDED;
+      submitTextColor = ColorConstants.textEnded;
     } else if (this.event.isSubmit) {
       submitText = "提出済み";
-      submitTextColor = ColorConstants.TEXT_SAFE;
+      submitTextColor = ColorConstants.textSafe;
     } else {
       submitText = "未提出";
-      submitTextColor = ColorConstants.TEXT_DANGER;
+      submitTextColor = ColorConstants.textDanger;
     }
 
     return Scaffold(
@@ -67,7 +67,7 @@ class EventDetailWidget extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 10),
               child: Text(
                 this.event.courseName,
-                style: const TextStyle(color: ColorConstants.TEXT_SUB),
+                style: const TextStyle(color: ColorConstants.textSub),
               ),
             ),
             Padding(
@@ -93,7 +93,7 @@ class EventDetailWidget extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.only(bottom: SUB_TEXT_MARGIN),
               child: Text("説明",
-                  style: TextStyle(color: ColorConstants.TEXT_ENDED)),
+                  style: TextStyle(color: ColorConstants.textEnded)),
             ),
             Expanded(
               child: SingleChildScrollView(
