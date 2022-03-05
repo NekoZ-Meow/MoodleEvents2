@@ -5,8 +5,8 @@ import 'dart:io';
 import "package:http/http.dart" as http;
 import 'package:moodle_event_2/Utility/debug_utility.dart';
 import 'package:moodle_event_2/constants/string_constants.dart';
-import 'package:moodle_event_2/event/event.dart';
 import 'package:moodle_event_2/event/json_to_event.dart';
+import 'package:moodle_event_2/model/event/event.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
 const String baseUrl = "https://cclms.kyoto-su.ac.jp/lib/ajax/service.php";
@@ -62,7 +62,7 @@ Future<Map<int, Event>> _getCalendarEventsMap(
   String method = "core_calendar_get_calendar_monthly_view";
   List<Future<String>> futureList = [];
   int diffMonth = (end.year - start.year) * 12 + end.month - start.month;
-  if (diffMonth <= 0) return new Map<int, Event>();
+  if (diffMonth <= 0) return Map<int, Event>();
   int nowMonth = start.month;
   int nowYear = start.year;
   for (int count = 0; count <= diffMonth; count += 1) {
@@ -84,6 +84,7 @@ Future<Map<int, Event>> _getCalendarEventsMap(
   List<dynamic> jsonEvents =
       results.map((jsonString) => json.decode(jsonString)).toList();
   debugLog(DateTime.now().difference(debugStart).inMilliseconds);
+
   return calenderJsonToEventsMap(jsonEvents);
 }
 

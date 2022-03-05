@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:moodle_event_2/ui/root_widget.dart';
+import 'package:moodle_event_2/ui/home_page/home_page.dart';
+import 'package:moodle_event_2/ui/home_page/home_page_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 import 'constants/color_constants.dart';
 
@@ -31,7 +33,10 @@ class MyApp extends StatelessWidget {
                 fontWeight: FontWeight.w500),
             subtitle2: TextStyle(color: ColorConstants.textSub, fontSize: 12)),
       ),
-      home: RootWidget(),
+      home: ChangeNotifierProvider(
+        create: (context) => HomePageViewModel(),
+        child: const HomePage(),
+      ),
     );
   }
 }

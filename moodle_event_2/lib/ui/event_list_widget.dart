@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:moodle_event_2/event/event.dart';
+import 'package:moodle_event_2/model/event/event.dart';
 import 'package:moodle_event_2/model/model.dart';
-import 'package:moodle_event_2/server_interface/server_interface.dart';
+import 'package:moodle_event_2/model/server_interface/server_interface.dart';
 import 'package:moodle_event_2/ui/event_card.dart';
 import 'package:moodle_event_2/utility/debug_utility.dart';
 
@@ -46,7 +46,7 @@ class _EventListWidgetState extends State<EventListWidget> {
             DateTime(2021, 1), DateTime(2021, 12), widget.model.user.sessKey);
         if (this.mounted) {
           this.setState(() {
-            widget.model.updateEventList(events);
+            //widget.model.updateEventList(events);
           });
           try {
             await widget.model.save();

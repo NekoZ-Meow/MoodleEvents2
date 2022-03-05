@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:moodle_event_2/model/model.dart';
-import 'package:moodle_event_2/server_interface/server_interface.dart';
+import 'package:moodle_event_2/model/server_interface/server_interface.dart';
 import 'package:moodle_event_2/ui/login_web_view.dart';
 import 'package:moodle_event_2/user_manager/user_manager.dart';
 import 'package:moodle_event_2/utility/debug_utility.dart';
@@ -12,7 +12,6 @@ import 'root_widget.dart';
 ///
 /// 認証自動化する際に使用する予定
 ///
-
 
 class LoginWidget extends StatefulWidget {
   @override

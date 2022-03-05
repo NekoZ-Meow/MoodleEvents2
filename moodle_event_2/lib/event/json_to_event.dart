@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:moodle_event_2/Utility/debug_utility.dart';
-import 'package:moodle_event_2/event/event.dart';
+import 'package:moodle_event_2/model/event/event.dart';
 
 ///
 /// サーバから受け取ったJson形式の情報をEventクラスに変換し、
