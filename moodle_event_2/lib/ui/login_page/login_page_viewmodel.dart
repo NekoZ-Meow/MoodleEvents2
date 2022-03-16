@@ -3,11 +3,9 @@ import 'package:moodle_event_2/ui/login_page/login_state.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class LoginPageViewModel with ChangeNotifier {
-  String _sessionKey = "";
   LoginState _state = LoginState.undefined;
   WebViewController? _controller;
 
-  String get sessionKey => this._sessionKey;
   WebViewController? get controller => this._controller;
 
   /// コンストラクタ

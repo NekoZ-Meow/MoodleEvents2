@@ -17,25 +17,30 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     HttpOverrides.global = new MyHttpOverrides();
-    return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        textTheme: TextTheme(
-            headline2: GoogleFonts.openSans(
-                color: ColorConstants.textMain,
-                fontSize: 14,
-                fontWeight: FontWeight.w500),
-            headline3: GoogleFonts.openSans(
-                color: ColorConstants.textMain,
-                fontSize: 19,
-                fontWeight: FontWeight.w500),
-            subtitle2: TextStyle(color: ColorConstants.textSub, fontSize: 12)),
-      ),
-      home: ChangeNotifierProvider(
-        create: (context) => HomePageViewModel(),
-        child: const HomePage(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => HomePageViewModel(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          textTheme: TextTheme(
+              headline2: GoogleFonts.openSans(
+                  color: ColorConstants.textMain,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500),
+              headline3: GoogleFonts.openSans(
+                  color: ColorConstants.textMain,
+                  fontSize: 19,
+                  fontWeight: FontWeight.w500),
+              subtitle2:
+                  TextStyle(color: ColorConstants.textSub, fontSize: 12)),
+        ),
+        home: const HomePage(),
       ),
     );
   }
