@@ -52,7 +52,7 @@ class EventDetailWidget extends StatelessWidget {
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(MarginConstants.BASE_MARGIN),
+        padding: EdgeInsets.all(MarginConstants.baseMargin),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

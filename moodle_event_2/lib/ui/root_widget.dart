@@ -30,7 +30,7 @@ class _RootWebView extends State<RootWidget> {
         title: const Text("Moodle Events"),
       ),
       body: Padding(
-        padding: EdgeInsets.all(MarginConstants.BASE_MARGIN),
+        padding: EdgeInsets.all(MarginConstants.baseMargin),
         child: EventListWidget(this._model),
       ),
     );

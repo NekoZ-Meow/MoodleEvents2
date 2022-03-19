@@ -10,6 +10,7 @@ class HomePageViewModel with ChangeNotifier {
   User _user = User();
 
   List<Event> get events => this._events;
+
   User get user => this._user;
 
   /// コンストラクタ
@@ -24,7 +25,8 @@ class HomePageViewModel with ChangeNotifier {
   }
 
   /// 保持しているイベントを[events]に更新し通知する
-  void updateEvents(List<Event> events) {
+  void updateEvents(List<Event> events) async {
+    await EventListModel.saveEventList(events);
     this._events = events;
     super.notifyListeners();
     return;

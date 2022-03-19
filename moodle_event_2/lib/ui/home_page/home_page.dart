@@ -16,29 +16,27 @@ class HomePage extends StatelessWidget {
 
   /// リストがリフレッシュされた時
   Future<void> onRefresh(BuildContext context) async {
-    // HomePageViewModel viewModel = Provider.of<HomePageViewModel>(context);
-    // debugLog(viewModel);
     try {
+      // 直前にログインし、セッションキーが有効である
       if (await isSessKeyValid(
           context.read<HomePageViewModel>().user.sessKey)) {
-        await context.watch<HomePageViewModel>().updateEventsFromMoodle();
-      } else {
-        await Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => ChangeNotifierProvider.value(
-            value: Provider.of<HomePageViewModel>(context, listen: false),
-            child: LoginPage(),
-          ),
-        ));
+        await context.read<HomePageViewModel>().updateEventsFromMoodle();
+        return;
+      }
 
-        if (await isSessKeyValid(
-            context.read<HomePageViewModel>().user.sessKey)) {
-          await context.watch<HomePageViewModel>().updateEventsFromMoodle();
-        }
+      String sessionKey = await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => LoginPage(),
+        ),
+      );
+      context.read<HomePageViewModel>().updateSessionKey(sessionKey);
+      if (await isSessKeyValid(
+          context.read<HomePageViewModel>().user.sessKey)) {
+        await context.read<HomePageViewModel>().updateEventsFromMoodle();
       }
     } catch (exception) {
       debugLog(exception);
     }
-
     return;
   }
 
@@ -51,23 +49,17 @@ class HomePage extends StatelessWidget {
             child: const EventCard()))
         .toList();
 
-    return ChangeNotifierProvider.value(
-      value: context.read<HomePageViewModel>(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Moodle Events"),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(MarginConstants.BASE_MARGIN),
-          child: ChangeNotifierProvider.value(
-            value: context.read<HomePageViewModel>(),
-            child: RefreshIndicator(
-              onRefresh: () => this.onRefresh(context),
-              child: ListView(
-                key: const PageStorageKey(0),
-                children: eventCards,
-              ),
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Moodle Events"),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(MarginConstants.baseMargin),
+        child: RefreshIndicator(
+          onRefresh: () => this.onRefresh(context),
+          child: ListView(
+            key: const PageStorageKey(0),
+            children: eventCards,
           ),
         ),
       ),
