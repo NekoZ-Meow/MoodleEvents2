@@ -83,7 +83,7 @@ Future<Map<int, Event>> _getCalendarEventsMap(
   List<String> results = await Future.wait(futureList);
   List<dynamic> jsonEvents =
       results.map((jsonString) => json.decode(jsonString)).toList();
-  debugLog(DateTime.now().difference(debugStart).inMilliseconds);
+  debugLog("${DateTime.now().difference(debugStart).inMilliseconds}ms");
 
   return calenderJsonToEventsMap(jsonEvents);
 }

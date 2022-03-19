@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:moodle_event_2/constants/string_constants.dart';
+import 'package:moodle_event_2/ui/home_page/home_page_viewmodel.dart';
 import 'package:moodle_event_2/ui/login_page/login_state.dart';
 import 'package:moodle_event_2/utility/debug_utility.dart';
+import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class LoginPage extends StatelessWidget {
@@ -33,7 +35,7 @@ class LoginPage extends StatelessWidget {
       return false;
     }
     return await this._webViewController!.runJavascriptReturningResult(
-        "document.getElementById('username')") !=
+            "document.getElementById('username')") !=
         "null";
   }
 
@@ -53,7 +55,8 @@ class LoginPage extends StatelessWidget {
       debugLog("load fin");
       this._state = LoginState.finish;
       String sessionKey = await this.getSessionKey();
-      Navigator.of(context).pop(sessionKey);
+      context.read<HomePageViewModel>().updateSessionKey(sessionKey);
+      Navigator.of(context).pop();
     } else if (RegExp(StringConstants.MOODLE_AUTH_URL).hasMatch(url)) {
       this._state = LoginState.redirect;
     }
