@@ -3,8 +3,8 @@
 ///
 
 class Event implements Comparable<Event> {
-  static final CATEGORY_USER = "user";
-  static final CATEGORY_COURSE = "course";
+  static const categoryUser = "user";
+  static const categoryCourse = "course";
 
   int _eventId = -1; //イベントID
   int? _eventInstance; //インスタンスID
@@ -64,13 +64,21 @@ class Event implements Comparable<Event> {
       };
 
   int get eventId => this._eventId;
+
   int? get eventInstance => this._eventInstance;
+
   String get title => this._title;
+
   String get description => this._description;
+
   String get categoryName => this._categoryName;
+
   String get courseName => this._courseName;
+
   String get url => this._url;
+
   DateTime get endTime => this._endTime;
+
   DateTime? get startTime => this._startTime;
 
   ///

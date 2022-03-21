@@ -18,7 +18,6 @@ class LoginPageViewModel with ChangeNotifier {
       sessionKey = await this._controller!.runJavascriptReturningResult(
           '(function (){return YUI.config["global"]["M"]["cfg"]["sesskey"];})()');
     }
-
     return sessionKey.replaceAll("\"", "");
   }
 

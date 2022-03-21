@@ -55,7 +55,7 @@ class LoginPage extends StatelessWidget {
       debugLog("load fin");
       this._state = LoginState.finish;
       String sessionKey = await this.getSessionKey();
-      context.read<HomePageViewModel>().updateSessionKey(sessionKey);
+      await context.read<HomePageViewModel>().updateSessionKey(sessionKey);
       Navigator.of(context).pop();
     } else if (RegExp(StringConstants.MOODLE_AUTH_URL).hasMatch(url)) {
       this._state = LoginState.redirect;
