@@ -1,5 +1,5 @@
 import 'package:moodle_event_2/model/event/event.dart';
-import 'package:moodle_event_2/model/event/event_conparator.dart';
+import 'package:moodle_event_2/model/event/event_comparator.dart';
 
 /// ソート方法指定のための列挙型
 enum SortOption {
