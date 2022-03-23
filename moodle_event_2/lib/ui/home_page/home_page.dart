@@ -14,7 +14,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Moodle Events"),
+        title: const Text("課題一覧"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(MarginConstants.baseMargin),

@@ -1,75 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:moodle_event_2/constants/color_constants.dart';
-import 'package:moodle_event_2/event/event.dart';
+import 'package:moodle_event_2/model/event/event.dart';
 
-///
 /// イベントカード用の日付のテキストを返す
-///
-String getEventDateText(Event event) {
-  DateTime eventTime = event.getRepresentativeTime();
-  Duration difference = eventTime.difference(DateTime.now());
-  int sec = difference.inSeconds;
-  String dayText = "";
-  String suffix = "";
-
-  if (sec < 0) {
-    sec *= -1;
-    suffix = "前";
+List<String> getDateStrings(DateTime dateTime) {
+  Duration difference = dateTime.difference(DateTime.now());
+  int seconds = difference.inSeconds.abs() % 60;
+  int minutes = difference.inMinutes.abs() % 60;
+  int hours = difference.inHours.abs() % 24;
+  int days = difference.inDays.abs();
+  List<String> dateStrings = [];
+  if (days > 0) {
+    dateStrings.add('$days日');
   }
-
-  if (sec >= 86400) {
-    dayText = '${difference.inDays.abs()}日';
-  } else if (sec >= 3600) {
-    if (difference.inMinutes.abs() % 60 == 0) {
-      dayText = "${difference.inHours.abs()}時間";
-    } else {
-      dayText =
-          '${difference.inHours.abs()}時間${difference.inMinutes.abs() % 60}分';
+  if (hours > 0) {
+    dateStrings.add("$hours時間");
+    if (minutes != 0) {
+      dateStrings.add('$minutes分');
     }
-  } else if (sec >= 60) {
-    dayText = '${difference.inMinutes.abs()}分';
+  } else if (minutes > 0) {
+    dateStrings.add('$minutes分');
+  }
+  dateStrings.add('$seconds秒');
+
+  if (difference.isNegative) {
+    dateStrings.add("前");
   } else {
-    dayText = '${sec.abs()}秒';
+    dateStrings.add("");
   }
-  dayText += suffix;
 
-  return dayText;
+  return dateStrings;
 }
 
-///
-/// イベント詳細用の日付のテキストを返す
-///
-String getEventFullDateText(Event event) {
-  DateTime eventTime = event.getRepresentativeTime();
-  Duration difference = eventTime.difference(DateTime.now());
-  int sec = difference.inSeconds;
-  String dayText = "";
-  String suffix = "";
-
-  if (sec < 0) {
-    sec *= -1;
-    suffix = "前に終了";
-  }
-
-  if (sec >= 86400) {
-    dayText += '${difference.inDays.abs()}日と';
-  }
-  if (sec >= 3600) {
-    dayText += "${difference.inHours.abs() % 24}時間";
-  }
-  if (sec >= 60) {
-    dayText += '${difference.inMinutes.abs() % 60}分';
-  }
-  dayText += '${sec.abs() % 60}秒';
-
-  dayText += suffix;
-
-  return dayText;
-}
-
-///
 /// イベントの日付の色を返す
-///
 Color getEventDateColor(Event event) {
   DateTime eventTime = event.getRepresentativeTime();
   Duration difference = eventTime.difference(DateTime.now());
@@ -83,14 +46,12 @@ Color getEventDateColor(Event event) {
   return ColorConstants.textDanger;
 }
 
-///
 /// イベントの日付に応じて接頭辞を返す
-///
 String getEventDatePrefix(Event event, {bool isEventDetail = false}) {
   if (event.isAlreadyEnded()) {
     return (isEventDetail) ? "終了まで" : "終了";
   }
-  if (event.startTime != null || event.categoryName == Event.CATEGORY_USER) {
+  if (event.startTime != null || event.categoryName == Event.categoryUser) {
     if (event.isAlreadyStarted()) {
       return "終了まで";
     }

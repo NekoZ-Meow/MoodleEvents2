@@ -95,18 +95,4 @@ class EventListViewModel with ChangeNotifier {
     Set<String> filterCourses = this._options.filterCourses;
     return (filterCourses.isEmpty) || filterCourses.contains(event.courseName);
   }
-
-// /// Event群をChangeNotifierProviderクラスをラップしたウィジェットへ変換し返す
-// List<ChangeNotifierProvider> getEventCardList() {
-//   return this
-//       ._listEvents
-//       .where((event) => this._titleFilter(event))
-//       .where((event) => this._categoryFilter(event))
-//       .where((event) => this._courseFilter(event))
-//       .map((event) => ChangeNotifierProvider(
-//             create: (context) => EventCardViewModel(event),
-//             child: const EventCard(),
-//           ))
-//       .toList();
-// }
 }

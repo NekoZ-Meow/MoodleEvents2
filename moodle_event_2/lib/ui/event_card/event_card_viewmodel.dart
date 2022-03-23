@@ -69,7 +69,7 @@ class EventCardViewModel with ChangeNotifier {
     Duration difference = eventTime.difference(DateTime.now());
     int seconds = difference.inSeconds.abs() % 60;
     int minutes = difference.inMinutes.abs() % 60;
-    int hours = difference.inHours.abs() % 12;
+    int hours = difference.inHours.abs() % 24;
     int days = difference.inDays.abs();
     String dayText = "";
     String suffix = "";

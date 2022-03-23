@@ -16,6 +16,7 @@ class OptionsModel {
   String filterTitle = "";
   Set<String> filterCategories = {};
   Set<String> filterCourses = {};
+
   SortOption sortOption = SortOption.deadLineAsc;
 
   factory OptionsModel() {
@@ -23,9 +24,7 @@ class OptionsModel {
     return OptionsModel._singletonInstance!;
   }
 
-  OptionsModel._() {
-    this.loadOptions();
-  }
+  OptionsModel._();
 
   ///
   /// options情報をセーブする
