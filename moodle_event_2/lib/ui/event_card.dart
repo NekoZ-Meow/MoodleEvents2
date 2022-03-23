@@ -12,6 +12,7 @@ import 'package:moodle_event_2/utility/event_utility.dart';
 ///
 class EventCardWidget extends StatelessWidget {
   final Event event;
+
   const EventCardWidget(this.event, {Key? key}) : super(key: key);
 
   ///
@@ -116,6 +117,7 @@ class EventCardWidget extends StatelessWidget {
 
 class _EventCardSubmitWidget extends StatefulWidget {
   final Event event;
+
   const _EventCardSubmitWidget(this.event, {Key? key}) : super(key: key);
 
   @override

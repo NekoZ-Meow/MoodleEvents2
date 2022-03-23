@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:moodle_event_2/model/server_interface/server_interface.dart';
+import 'package:moodle_event_2/ui/event_card.dart';
 import 'package:moodle_event_2/ui/event_list/event_list_viewmodel.dart';
 import 'package:moodle_event_2/ui/home_page/home_page_viewmodel.dart';
 import 'package:moodle_event_2/ui/login_page/login_page.dart';
@@ -41,13 +42,14 @@ class EventList extends StatelessWidget {
       child: FutureBuilder(
         future: context.read<EventListViewModel>().loadDependencies(),
         builder: (context, snapShot) {
-          // return Consumer<EventListViewModel>(
-          //     builder: (context, eventListViewModel, _) {
-          return ListView(
-            key: const PageStorageKey(0),
-            children: context.watch<EventListViewModel>().getEventCardList(),
-          );
-          //});
+          return Consumer<EventListViewModel>(builder: (context, viewModel, _) {
+            List<EventCard> eventCards =
+                viewModel.listEvents.map((event) => EventCard(event)).toList();
+            return ListView(
+              key: const PageStorageKey(0),
+              children: [],
+            );
+          });
         },
       ),
     );

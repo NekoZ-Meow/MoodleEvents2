@@ -15,7 +15,6 @@ class HomePageViewModel with ChangeNotifier {
 
   /// コンストラクタ
   HomePageViewModel() {
-    EventListModel.loadEventList().then((events) => this.updateEvents(events));
     return;
   }
 
