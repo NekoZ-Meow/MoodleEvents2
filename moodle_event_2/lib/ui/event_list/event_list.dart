@@ -55,30 +55,76 @@ class EventList extends StatelessWidget {
           return Consumer<EventListViewModel>(builder: (context, viewModel, _) {
             List<EventCard> eventCards =
                 viewModel.listEvents.map((event) => EventCard(event)).toList();
-            return Stack(
-              alignment: Alignment.center,
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ListView(
-                  key: const PageStorageKey(0),
-                  children: eventCards,
-                ),
-                (viewModel.listEvents.isEmpty)
-                    ? Container(
-                        alignment: Alignment.center,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: const [
-                            Text("イベントが存在しません",
-                                style:
-                                    TextStyle(color: ColorConstants.textEnded)),
-                            Text("下方向にスワイプして更新してください",
-                                style:
-                                    TextStyle(color: ColorConstants.textEnded)),
-                          ],
+                Padding(
+                  padding:
+                      const EdgeInsets.only(left: 10, right: 10, bottom: 5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        flex: 6,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            "イベント名",
+                            style: Theme.of(context).textTheme.subtitle2,
+                          ),
                         ),
-                      )
-                    : Container(),
+                      ),
+
+                      /// 提出済みかどうかのテキスト
+                      Expanded(
+                        flex: 1,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text("提出",
+                              style: Theme.of(context).textTheme.subtitle2),
+                        ),
+                      ),
+
+                      /// 提出を表すウィジェット
+                      Expanded(
+                        flex: 3,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text("日時",
+                              style: Theme.of(context).textTheme.subtitle2),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Flexible(
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      ListView(
+                        key: const PageStorageKey(0),
+                        children: eventCards,
+                      ),
+                      (viewModel.listEvents.isEmpty)
+                          ? Container(
+                              alignment: Alignment.center,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: const [
+                                  Text("イベントが存在しません",
+                                      style: TextStyle(
+                                          color: ColorConstants.textEnded)),
+                                  Text("下方向にスワイプして更新してください",
+                                      style: TextStyle(
+                                          color: ColorConstants.textEnded)),
+                                ],
+                              ),
+                            )
+                          : Container(),
+                    ],
+                  ),
+                ),
               ],
             );
           });
