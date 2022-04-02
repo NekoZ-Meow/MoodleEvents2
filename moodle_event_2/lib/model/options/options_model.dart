@@ -14,8 +14,9 @@ class OptionsModel {
   static OptionsModel? _singletonInstance; // シングルトンであるOptionsModelのインスタンス
 
   String filterTitle = "";
-  Set<String> filterCategories = {};
   Set<String> filterCourses = {};
+  DateTime? filterDateTime;
+  bool showAlreadyEnded = false;
 
   SortOption sortOption = SortOption.deadLineAsc;
 
@@ -55,9 +56,13 @@ class OptionsModel {
         return;
       }
       this.filterTitle = jsonMap["title"];
-      this.filterCategories = jsonMap["categories"].toSet();
       this.filterCourses = jsonMap["courses"].toSet();
       this.sortOption = SortOptionExtension.fromString(jsonMap["sort"]);
+      this.showAlreadyEnded = jsonMap["showEnded"];
+      if (jsonMap.containsKey("time")) {
+        this.filterDateTime =
+            DateTime.fromMillisecondsSinceEpoch(jsonMap["time"]);
+      }
     }
     return;
   }
@@ -65,11 +70,18 @@ class OptionsModel {
   ///
   /// このクラスをJsonに変換する
   ///
-  Map<String, dynamic> toJson() => {
-        "version": fileVersion,
-        "title": this.filterTitle,
-        "categories": this.filterCategories,
-        "courses": this.filterCourses,
-        "sort": this.sortOption.name
-      };
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> jsonMap = {
+      "version": fileVersion,
+      "title": this.filterTitle,
+      "courses": this.filterCourses,
+      "sort": this.sortOption.name,
+      "showEnded": this.showAlreadyEnded,
+    };
+    if (this.filterDateTime != null) {
+      jsonMap["time"] = this.filterDateTime!.millisecondsSinceEpoch;
+    }
+
+    return jsonMap;
+  }
 }

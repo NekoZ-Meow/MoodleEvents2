@@ -9,6 +9,8 @@ import 'package:moodle_event_2/ui/event_card/event_card.dart';
 import 'package:moodle_event_2/ui/event_list/event_list_viewmodel.dart';
 import 'package:moodle_event_2/ui/home_page/home_page_viewmodel.dart';
 import 'package:moodle_event_2/ui/login_page/login_page.dart';
+import 'package:moodle_event_2/ui/options/filter_option_button.dart';
+import 'package:moodle_event_2/ui/popup_menu/sort_option_popup_menu.dart';
 import 'package:provider/provider.dart';
 
 class EventList extends StatelessWidget {
@@ -32,11 +34,13 @@ class EventList extends StatelessWidget {
       if (await isSessKeyValid(
           context.read<HomePageViewModel>().user.sessKey)) {
         await context.read<HomePageViewModel>().updateEventsFromMoodle();
+        Fluttertoast.showToast(
+            msg: "更新しました", backgroundColor: ColorConstants.textEnded);
       }
     } on SocketException catch (exception) {
       ErrorDialog.showErrorDialog(context, "正しく通信できませんでした");
     } catch (exception) {
-      ErrorDialog.showErrorDialog(context, "ログインに失敗しました");
+      ErrorDialog.showErrorDialog(context, "更新に失敗しました");
     }
     return;
   }
@@ -46,8 +50,6 @@ class EventList extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: () async {
         await this.onRefresh(context);
-        Fluttertoast.showToast(
-            msg: "更新しました", backgroundColor: ColorConstants.textEnded);
       },
       child: FutureBuilder(
         future: context.read<EventListViewModel>().loadDependencies(),
@@ -58,44 +60,12 @@ class EventList extends StatelessWidget {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 10, right: 10, bottom: 5),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        flex: 6,
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            "イベント名",
-                            style: Theme.of(context).textTheme.subtitle2,
-                          ),
-                        ),
-                      ),
-
-                      /// 提出済みかどうかのテキスト
-                      Expanded(
-                        flex: 1,
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text("提出",
-                              style: Theme.of(context).textTheme.subtitle2),
-                        ),
-                      ),
-
-                      /// 提出を表すウィジェット
-                      Expanded(
-                        flex: 3,
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text("日時",
-                              style: Theme.of(context).textTheme.subtitle2),
-                        ),
-                      ),
-                    ],
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: const [
+                    FilterOptionButton(),
+                    SortOptionPopupMenu(),
+                  ],
                 ),
                 Flexible(
                   child: Stack(

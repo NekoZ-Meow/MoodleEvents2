@@ -167,6 +167,12 @@ class _EventCardSubmitWidgetState extends State<_EventCardSubmitWidget> {
   }
 
   @override
+  void didUpdateWidget(covariant _EventCardSubmitWidget oldWidget) {
+    this._updateDeadlineText();
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     this._updateDeadlineText();

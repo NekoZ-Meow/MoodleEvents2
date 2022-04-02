@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:moodle_event_2/model/event/test_event_list_model.dart';
 import 'package:moodle_event_2/ui/home_page/home_page.dart';
 import 'package:moodle_event_2/ui/home_page/home_page_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => HomePageViewModel(),
+          create: (context) => HomePageViewModel(TestEventListModel()),
         ),
       ],
       child: MaterialApp(
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
                   fontSize: 19,
                   fontWeight: FontWeight.w500),
               subtitle2:
-                  const TextStyle(color: ColorConstants.textSub, fontSize: 12)),
+              const TextStyle(color: ColorConstants.textSub, fontSize: 12)),
         ),
         home: const HomePage(),
       ),

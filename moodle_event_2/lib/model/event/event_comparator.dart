@@ -1,4 +1,5 @@
 import 'package:moodle_event_2/model/event/event.dart';
+import 'package:moodle_event_2/utility/string_utility.dart';
 
 /// イベントを比較するためのメソッド群
 class EventComparator {
@@ -9,16 +10,22 @@ class EventComparator {
 
   /// タイトルで比較する
   static int compareByTitle(Event aEvent, Event anotherEvent) {
-    return aEvent.title.compareTo(anotherEvent.title);
+    String aTitle = kanaToHira(aEvent.title);
+    String anotherTitle = kanaToHira(anotherEvent.title);
+    return aTitle.compareTo(anotherTitle);
   }
 
   /// カテゴリ名で比較する
   static int compareByCategory(Event aEvent, Event anotherEvent) {
-    return aEvent.categoryName.compareTo(anotherEvent.categoryName);
+    String aCategoryName = kanaToHira(aEvent.categoryName);
+    String anotherCategoryName = kanaToHira(anotherEvent.categoryName);
+    return aCategoryName.compareTo(anotherCategoryName);
   }
 
   /// コース名で比較する
   static int compareByCourse(Event aEvent, Event anotherEvent) {
-    return aEvent.courseName.compareTo(anotherEvent.courseName);
+    String aCourseName = kanaToHira(aEvent.courseName);
+    String anotherCourseName = kanaToHira(anotherEvent.courseName);
+    return aCourseName.compareTo(anotherCourseName);
   }
 }

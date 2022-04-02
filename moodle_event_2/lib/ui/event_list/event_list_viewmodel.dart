@@ -38,11 +38,21 @@ class EventListViewModel with ChangeNotifier {
     return;
   }
 
+  /// 現在のソート方法を取得する
+  SortOption getSortOption() {
+    return this._options.sortOption;
+  }
+
   /// イベント群をソートする
   void _sortEvents() {
     this._sortedEvents.sort((aEvent, anotherEvent) =>
         this._options.sortOption.toComparator()(aEvent, anotherEvent));
     return;
+  }
+
+  /// コースフィルタを取得する
+  Set<String> getCourseFilter() {
+    return this._options.filterCourses;
   }
 
   /// タイトルフィルタを設定する
@@ -52,16 +62,16 @@ class EventListViewModel with ChangeNotifier {
     return;
   }
 
-  /// カテゴリフィルタを設定する
-  void setCategoryFilter(Set<String> categories) {
-    this._options.filterCategories = categories;
+  /// コースフィルタを追加する
+  void addCourseFilter(String course) {
+    this._options.filterCourses.add(course);
     this._updateFilter();
     return;
   }
 
-  /// コースフィルタを設定する
-  void setCoursesFilter(Set<String> courses) {
-    this._options.filterCourses = courses;
+  /// 指定したコースフィルタを削除する
+  void removeCourseFilter(String course) {
+    this._options.filterCourses.remove(course);
     this._updateFilter();
     return;
   }
@@ -72,8 +82,9 @@ class EventListViewModel with ChangeNotifier {
     this._listEvents.addAll(this
         ._sortedEvents
         .where((event) => this._titleFilter(event))
-        .where((event) => this._categoryFilter(event))
-        .where((event) => this._courseFilter(event)));
+        .where((event) => this._courseFilter(event))
+        .where((event) =>
+            this._options.showAlreadyEnded || this._alreadyEndedFilter(event)));
     super.notifyListeners();
   }
 
@@ -83,16 +94,14 @@ class EventListViewModel with ChangeNotifier {
     return (filterTitle.isEmpty) || event.title.contains(filterTitle);
   }
 
-  /// イベント群をカテゴリで絞る
-  bool _categoryFilter(Event event) {
-    Set<String> filterCategories = this._options.filterCategories;
-    return (filterCategories.isEmpty) ||
-        filterCategories.contains(event.categoryName);
-  }
-
   /// イベント群をコースで絞る
   bool _courseFilter(Event event) {
     Set<String> filterCourses = this._options.filterCourses;
     return (filterCourses.isEmpty) || filterCourses.contains(event.courseName);
+  }
+
+  /// すでに終了しているかのフィルタ
+  bool _alreadyEndedFilter(Event event) {
+    return !event.isAlreadyEnded();
   }
 }

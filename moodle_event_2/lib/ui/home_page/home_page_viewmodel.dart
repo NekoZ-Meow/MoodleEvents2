@@ -1,33 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:moodle_event_2/model/event/event.dart';
-import 'package:moodle_event_2/model/event/event_list_model.dart';
+import 'package:moodle_event_2/model/event/i_event_list_model.dart';
 import 'package:moodle_event_2/model/server_interface/server_interface.dart';
 import 'package:moodle_event_2/model/user/user_model.dart';
 import 'package:moodle_event_2/utility/debug_utility.dart';
 
 class HomePageViewModel with ChangeNotifier {
-  List<Event> _events = [];
+  final IEventListModel _model;
   final UserModel _user = UserModel();
 
-  List<Event> get events => this._events;
+  List<Event> get events => this._model.events;
 
   UserModel get user => this._user;
 
   /// コンストラクタ
-  HomePageViewModel() {
-    return;
-  }
+  HomePageViewModel(IEventListModel model) : this._model = model;
 
   Future<void> loadDependencies() async {
     debugLog("load dependence home page");
-    this.updateEvents(await EventListModel.loadEventList());
+    this._model.loadEventList();
     await this.user.loadUser();
+    super.notifyListeners();
   }
 
   /// 保持しているイベントを[events]に更新し通知する
   void updateEvents(List<Event> events) async {
-    await EventListModel.saveEventList(events);
-    this._events = events;
+    this._model.updateEvents(events);
+    await this._model.saveEventList();
     super.notifyListeners();
     return;
   }

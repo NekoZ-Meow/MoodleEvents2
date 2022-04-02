@@ -24,18 +24,18 @@ dependencies:
   flutter:
     sdk: flutter
 
-  webview_flutter: ^2.0.4
-  path_provider: ^2.0.9
-  crypto: ^3.0.0
-  cookie_jar: ^3.0.1
-  http: ^0.13.4
-  webview_cookie_manager: ^2.0.6
-  google_fonts: ^2.3.1
-  flutter_html: ^2.2.1 # this plugin depends on webview_flutter ^2.0.4
-  url_launcher: ^6.0.20
-  provider: ^6.0.2
-  path: ^1.8.0
-  fluttertoast: ^8.0.9
+  webview_flutter:
+  path_provider:
+  crypto:
+  cookie_jar:
+  http:
+  webview_cookie_manager:
+  google_fonts:
+  flutter_html:
+  url_launcher:
+  provider:
+  path:
+  fluttertoast:
 
 
   # The following adds the Cupertino Icons font to your application.

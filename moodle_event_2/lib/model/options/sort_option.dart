@@ -7,8 +7,6 @@ enum SortOption {
   deadLineDesc,
   titleAsc,
   titleDesc,
-  categoryAsc,
-  categoryDesc,
   courseAsc,
   courseDesc,
 }
@@ -19,8 +17,6 @@ extension SortOptionExtension on SortOption {
     SortOption.deadLineDesc: "deadLineDesc",
     SortOption.titleAsc: "titleAsc",
     SortOption.titleDesc: "titleDesc",
-    SortOption.categoryAsc: "categoryAsc",
-    SortOption.categoryDesc: "categoryDesc",
     SortOption.courseAsc: "courseAsc",
     SortOption.courseDesc: "courseDesc",
   };
@@ -59,14 +55,6 @@ extension SortOptionExtension on SortOption {
         sortMethod = EventComparator.compareByTitle;
         isDesc = true;
         break;
-      case SortOption.categoryAsc:
-        sortMethod = EventComparator.compareByCategory;
-        isDesc = false;
-        break;
-      case SortOption.categoryDesc:
-        sortMethod = EventComparator.compareByCategory;
-        isDesc = true;
-        break;
       case SortOption.courseAsc:
         sortMethod = EventComparator.compareByCourse;
         isDesc = false;
@@ -77,8 +65,7 @@ extension SortOptionExtension on SortOption {
         break;
     }
 
-    return (aEvent, anotherEvent) {
-      return (isDesc) ? -1 : 1 * sortMethod(aEvent, anotherEvent);
-    };
+    return (aEvent, anotherEvent) =>
+        ((isDesc) ? -1 : 1) * sortMethod(aEvent, anotherEvent);
   }
 }

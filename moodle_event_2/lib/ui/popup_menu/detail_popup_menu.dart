@@ -9,10 +9,10 @@ enum SelectValue {
   openUrl,
 }
 
-class PopupMenu extends StatelessWidget {
+class DetailPopupMenu extends StatelessWidget {
   final Event event;
 
-  const PopupMenu(this.event, {Key? key}) : super(key: key);
+  const DetailPopupMenu(this.event, {Key? key}) : super(key: key);
 
   ///
   /// 選択された時の処理

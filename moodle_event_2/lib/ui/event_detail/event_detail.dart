@@ -5,7 +5,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:moodle_event_2/constants/color_constants.dart';
 import 'package:moodle_event_2/constants/margin_constants.dart';
 import 'package:moodle_event_2/model/event/event.dart';
-import 'package:moodle_event_2/ui/popup_menu/popup_menu.dart';
+import 'package:moodle_event_2/ui/popup_menu/detail_popup_menu.dart';
 import 'package:moodle_event_2/utility/event_utility.dart';
 import "package:url_launcher/url_launcher.dart";
 
@@ -49,7 +49,7 @@ class EventDetailWidget extends StatelessWidget {
       appBar: AppBar(
         title: const Text("イベント詳細"),
         actions: [
-          PopupMenu(this.event),
+          DetailPopupMenu(this.event),
         ],
       ),
       body: Padding(
