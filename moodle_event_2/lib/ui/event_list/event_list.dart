@@ -17,13 +17,14 @@ class EventList extends StatelessWidget {
   const EventList({Key? key}) : super(key: key);
 
   /// リストがリフレッシュされた時
-  Future<void> onRefresh(BuildContext context) async {
+  /// 正しく更新できたならtrueを返す
+  Future<bool> onRefresh(BuildContext context) async {
     try {
       // 直前にログインし、セッションキーが有効である
       if (await isSessKeyValid(
           context.read<HomePageViewModel>().user.sessKey)) {
         await context.read<HomePageViewModel>().updateEventsFromMoodle();
-        return;
+        return true;
       }
 
       await Navigator.of(context).push(
@@ -34,72 +35,70 @@ class EventList extends StatelessWidget {
       if (await isSessKeyValid(
           context.read<HomePageViewModel>().user.sessKey)) {
         await context.read<HomePageViewModel>().updateEventsFromMoodle();
-        Fluttertoast.showToast(
-            msg: "更新しました", backgroundColor: ColorConstants.textEnded);
       }
     } on SocketException catch (exception) {
       ErrorDialog.showErrorDialog(context, "正しく通信できませんでした");
+      return false;
     } catch (exception) {
       ErrorDialog.showErrorDialog(context, "更新に失敗しました");
+      return false;
     }
-    return;
+    return true;
   }
 
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async {
-        await this.onRefresh(context);
+        if (await this.onRefresh(context)) {
+          await Fluttertoast.showToast(
+              msg: "更新しました", backgroundColor: ColorConstants.textEnded);
+        }
       },
-      child: FutureBuilder(
-        future: context.read<EventListViewModel>().loadDependencies(),
-        builder: (context, snapShot) {
-          return Consumer<EventListViewModel>(builder: (context, viewModel, _) {
-            List<EventCard> eventCards =
-                viewModel.listEvents.map((event) => EventCard(event)).toList();
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: const [
-                    FilterOptionButton(),
-                    SortOptionPopupMenu(),
-                  ],
-                ),
-                Flexible(
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      ListView(
-                        key: const PageStorageKey(0),
-                        children: eventCards,
-                      ),
-                      (viewModel.listEvents.isEmpty)
-                          ? Container(
-                              alignment: Alignment.center,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: const [
-                                  Text("イベントが存在しません",
-                                      style: TextStyle(
-                                          color: ColorConstants.textEnded)),
-                                  Text("下方向にスワイプして更新してください",
-                                      style: TextStyle(
-                                          color: ColorConstants.textEnded)),
-                                ],
-                              ),
-                            )
-                          : Container(),
-                    ],
-                  ),
-                ),
+      child: Consumer<EventListViewModel>(builder: (context, viewModel, _) {
+        List<EventCard> eventCards =
+            viewModel.listEvents.map((event) => EventCard(event)).toList();
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: const [
+                FilterOptionButton(),
+                SortOptionPopupMenu(),
               ],
-            );
-          });
-        },
-      ),
+            ),
+            Flexible(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  ListView(
+                    key: const PageStorageKey(0),
+                    children: eventCards,
+                  ),
+                  (viewModel.listEvents.isEmpty)
+                      ? Container(
+                          alignment: Alignment.center,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: const [
+                              Text("イベントが存在しません",
+                                  style: TextStyle(
+                                      color: ColorConstants.textEnded)),
+                              Text("下方向にスワイプして更新してください",
+                                  style: TextStyle(
+                                      color: ColorConstants.textEnded)),
+                            ],
+                          ),
+                        )
+                      : Container(),
+                ],
+              ),
+            ),
+          ],
+        );
+      }),
     );
   }
 }

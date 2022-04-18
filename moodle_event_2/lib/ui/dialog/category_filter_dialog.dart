@@ -27,8 +27,7 @@ class _CategoryFilterDialogState extends State<CategoryFilterDialog> {
       title: const Text("コースフィルタ"),
       content: SizedBox(
         width: double.maxFinite,
-        child:
-            Flexible(child: ListView(shrinkWrap: true, children: checkboxes)),
+        child: ListView(shrinkWrap: true, children: checkboxes),
       ),
       actions: [
         Row(
@@ -46,7 +45,7 @@ class _CategoryFilterDialogState extends State<CategoryFilterDialog> {
                     });
                   });
                 },
-                child: const Text("全てを選択")),
+                child: const Text("全てを除外")),
             TextButton(
                 onPressed: () {
                   setState(() {
@@ -57,7 +56,7 @@ class _CategoryFilterDialogState extends State<CategoryFilterDialog> {
                     });
                   });
                 },
-                child: const Text("全てを解除")),
+                child: const Text("全てを表示")),
           ],
         ),
         TextButton(

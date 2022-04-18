@@ -1,7 +1,17 @@
+import 'dart:math';
+
 import 'package:moodle_event_2/model/event/event.dart';
 import 'package:moodle_event_2/model/event/i_event_list_model.dart';
 
 class TestEventListModel implements IEventListModel {
+  static final TestEventListModel _instance = TestEventListModel._internal();
+
+  TestEventListModel._internal();
+
+  factory TestEventListModel() {
+    return _instance;
+  }
+
   final List<Event> _events = [];
 
   @override
@@ -25,6 +35,8 @@ class TestEventListModel implements IEventListModel {
       "うええええええええい",
       "アルゴリズムとデータ構造 プログラミング課題1",
       "長期課題",
+      "激ムズレポート",
+      "人生の証明",
     ];
 
     List<String> courseNames = [
@@ -35,12 +47,14 @@ class TestEventListModel implements IEventListModel {
       "Introduction to Astrophysics",
       "ほぉぉぉぉぉぉぉぉぉぉぉぉぉぉ",
       "アルゴリズムとデータ構造",
-      "プログラミング言語"
+      "プログラミング言語",
+      "コンピュータシステム",
+      "宇宙物理学",
     ];
 
     this._events.clear();
     DateTime now = DateTime.now();
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < min(courseNames.length, eventTitles.length); i++) {
       this._events.add(Event(i, i, eventTitles[i], "これはテストです", "コースイベント",
           courseNames[i], "https://google.com", now.add(Duration(days: i)),
           isSubmit: i % 2 == 0));

@@ -9,6 +9,14 @@ import 'package:path_provider/path_provider.dart';
 
 class EventListModel implements IEventListModel {
   static const String eventListFileName = "events"; //保存するファイル名
+  static final EventListModel _instance = EventListModel._internal();
+
+  EventListModel._internal();
+
+  factory EventListModel() {
+    return _instance;
+  }
+
   final List<Event> _events = [];
 
   @override

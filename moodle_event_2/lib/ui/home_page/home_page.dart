@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:moodle_event_2/constants/margin_constants.dart';
+import 'package:moodle_event_2/notification/notification_service.dart';
 import 'package:moodle_event_2/ui/event_list/event_list.dart';
 import 'package:moodle_event_2/ui/event_list/event_list_viewmodel.dart';
 import 'package:moodle_event_2/ui/home_page/home_page_viewmodel.dart';
@@ -18,18 +19,28 @@ class HomePage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(MarginConstants.baseMargin),
-        child: FutureBuilder(
-          future: context.read<HomePageViewModel>().loadDependencies(),
+        child: FutureBuilder<EventListViewModel>(
+          future: Future<EventListViewModel>(() async {
+            EventListViewModel viewModel = EventListViewModel();
+            await context.read<HomePageViewModel>().loadDependencies();
+            await viewModel.loadDependencies();
+            return viewModel;
+          }),
           builder: (context, snapShot) {
-            return ChangeNotifierProxyProvider<HomePageViewModel,
-                EventListViewModel>(
-              create: (context) => EventListViewModel(),
-              update: (context, homePageViewModel, eventListViewModel) {
-                eventListViewModel?.updateListEvents(homePageViewModel.events);
-                return eventListViewModel!;
-              },
-              child: const EventList(),
-            );
+            if (snapShot.hasData) {
+              return ChangeNotifierProxyProvider<HomePageViewModel,
+                  EventListViewModel>(
+                create: (context) => snapShot.data!,
+                update: (context, homePageViewModel, eventListViewModel) {
+                  eventListViewModel
+                      ?.updateListEvents(homePageViewModel.events);
+                  return eventListViewModel!;
+                },
+                child: const EventList(),
+              );
+            } else {
+              return Container();
+            }
           },
         ),
       ),

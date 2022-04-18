@@ -14,6 +14,17 @@ class FilterCheckBox extends StatefulWidget {
 }
 
 class _FilterCheckBoxState extends State<FilterCheckBox> {
+  /// 値が変更された時
+  void onChangeHandler(bool isSelected, EventListViewModel viewModel) {
+    super.setState(() {
+      if (isSelected) {
+        viewModel.removeCourseFilter(widget._title);
+      } else {
+        viewModel.addCourseFilter(widget._title);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -26,17 +37,9 @@ class _FilterCheckBoxState extends State<FilterCheckBox> {
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.headline2,
           ),
-          value: viewModel.getCourseFilter().contains(widget._title),
-          onChanged: (value) {
-            if (value == null) return;
-            super.setState(() {
-              if (value) {
-                viewModel.addCourseFilter(widget._title);
-              } else {
-                viewModel.removeCourseFilter(widget._title);
-              }
-            });
-          },
+          value: !viewModel.getCourseFilter().contains(widget._title),
+          onChanged: (value) =>
+              (value != null) ? onChangeHandler(value, viewModel) : {},
         );
       }),
     );

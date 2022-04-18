@@ -56,7 +56,9 @@ class OptionsModel {
         return;
       }
       this.filterTitle = jsonMap["title"];
-      this.filterCourses = jsonMap["courses"].toSet();
+      List<dynamic> coursesRaw = jsonMap["courses"];
+      this.filterCourses =
+          coursesRaw.map((course) => course.toString()).toSet();
       this.sortOption = SortOptionExtension.fromString(jsonMap["sort"]);
       this.showAlreadyEnded = jsonMap["showEnded"];
       if (jsonMap.containsKey("time")) {
@@ -74,7 +76,7 @@ class OptionsModel {
     Map<String, dynamic> jsonMap = {
       "version": fileVersion,
       "title": this.filterTitle,
-      "courses": this.filterCourses,
+      "courses": this.filterCourses.toList(),
       "sort": this.sortOption.name,
       "showEnded": this.showAlreadyEnded,
     };

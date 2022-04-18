@@ -55,9 +55,21 @@ class EventListViewModel with ChangeNotifier {
     return this._options.filterCourses;
   }
 
+  /// 終了しているイベントを表示するかを取得
+  bool isShowEndedEvent() {
+    return this._options.showAlreadyEnded;
+  }
+
   /// タイトルフィルタを設定する
   void setTitleFilter(String title) {
     this._options.filterTitle = title;
+    this._updateFilter();
+    return;
+  }
+
+  /// 終了しているイベントを表示するかを設定
+  void setShowEndedEvent(bool isShowEnded) {
+    this._options.showAlreadyEnded = isShowEnded;
     this._updateFilter();
     return;
   }
@@ -84,7 +96,8 @@ class EventListViewModel with ChangeNotifier {
         .where((event) => this._titleFilter(event))
         .where((event) => this._courseFilter(event))
         .where((event) =>
-            this._options.showAlreadyEnded || this._alreadyEndedFilter(event)));
+            this._options.showAlreadyEnded || this._endedFilter(event)));
+    this._options.saveOptions();
     super.notifyListeners();
   }
 
@@ -97,11 +110,11 @@ class EventListViewModel with ChangeNotifier {
   /// イベント群をコースで絞る
   bool _courseFilter(Event event) {
     Set<String> filterCourses = this._options.filterCourses;
-    return (filterCourses.isEmpty) || filterCourses.contains(event.courseName);
+    return (filterCourses.isEmpty) || !filterCourses.contains(event.courseName);
   }
 
-  /// すでに終了しているかのフィルタ
-  bool _alreadyEndedFilter(Event event) {
+  /// 終了しているかのフィルタ
+  bool _endedFilter(Event event) {
     return !event.isAlreadyEnded();
   }
 }
